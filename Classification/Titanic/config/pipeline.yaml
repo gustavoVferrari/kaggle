@@ -1,0 +1,20 @@
+features:
+  cat_var:
+      - Pclass    
+      - Sex
+      - Ticket
+      - Embarked
+      - Title
+
+  num_dis:    
+      - SibSp
+      - Parch    
+      - IsAlone
+      
+  num_con:
+      - Age
+
+  target: 
+      - Survived
+
+

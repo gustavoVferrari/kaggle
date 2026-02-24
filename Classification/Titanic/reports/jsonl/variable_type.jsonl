@@ -1,0 +1,1 @@
+{"categorical_var": ["Pclass", "Name", "Sex", "Ticket", "Cabin", "Embarked", "Title", "Ticket_1p", "Cabin_1p", "Embarked_mod"], "numerical_var": ["PassengerId", "Survived", "Age", "SibSp", "Parch", "Fare", "FamilySize", "IsAlone"]}
