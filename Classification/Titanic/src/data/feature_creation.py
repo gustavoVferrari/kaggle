@@ -38,7 +38,8 @@ def FeatureCreation(dataset_path:str, save_path:str, train:bool=True) -> None:
     df['Embarked_mod'] = df['Embarked'].map({'S': 'SQ', 'Q': 'SQ', 'C': 'C'})
     df['FamilySize'] = df['SibSp'] + df['Parch'] + 1
     df['IsAlone'] = (df['FamilySize'] == 1).astype(int)    
-
+    
+    df['Fare'] = df['Fare'].apply(lambda x: np.abs(x))
  
     df = df.astype({
         'Pclass':str, 

@@ -6,32 +6,32 @@ from sklearn.pipeline import Pipeline
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
+project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from src.utils.utils import to_jsonl
-from src.features.make_dataset import split_data, save_data
+from utils.utils import to_jsonl
+from functions.make_dataset import split_data, save_data
 from src.features.feature_eng import PreprocessingOrchestrator
-from src.features.single_model import ModelOrchestrator
-from src.features.model_selection import grid_search
-from src.features.train_model import train_model, save_model, save_pipeline
-from src.features.evaluate_model import evaluate_model, MetricsOrchestrator
-from src.features.undersamplig import UnderSampligOrchestrator
-from src.features.predict_model import make_prediction
-from src.features.cross_validate import cross_validate
+from functions.single_model import ModelOrchestrator
+from functions.model_selection import grid_search
+from functions.train_model import train_model, save_model, save_pipeline
+from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.undersamplig import UnderSampligOrchestrator
+from functions.predict_model import make_prediction
+from functions.cross_validate import cross_validate
 
 def main_single_model():
     
     # 1. Carregar configurações
-    with open(os.path.join(project_root, "config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
     
     # pipeline selection    
-    with open(os.path.join(project_root, "config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
     
     # model selection    
-    with open(os.path.join(project_root, "config/model.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
     print("Iniciando pipeline de Machine Learning...")

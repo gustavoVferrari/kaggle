@@ -6,7 +6,7 @@ import sys
 import pickle
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
+project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
 
@@ -14,21 +14,21 @@ sys.path.insert(0, project_root)
 def main_submission(threshold=0.5):
     
     # 1. Carregar configurações
-    with open(os.path.join(project_root, "config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
     
     # pipeline selection    
-    with open(os.path.join(project_root, "config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
     
     # model selection    
-    with open(os.path.join(project_root, "config/model.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
     
     
     # Get feature eng data
-    pipeline_name = "Pipeline2"
+    pipeline_name = "Pipeline3"
     model_name = "rf"
     
     X_test = pd.read_parquet(
@@ -55,7 +55,7 @@ def main_submission(threshold=0.5):
     model_path = os.path.join(
            config['init_path'],
            config['single_model']['pkl'],
-            f"{model_name}.pkl")
+            f"{model_name}_{pipeline_name}.pkl")
     # open model    
     with open(model_path, "rb") as file:
         model = pickle.load(file)
@@ -69,8 +69,10 @@ def main_submission(threshold=0.5):
         os.path.join(
            config['init_path'],
            config['data']['submission'],
-            f'submission_{model_name}.csv'),
+            f'submission_{model_name}_{pipeline_name}.csv'),
         index=False)
     
+    print("dados salvos com sucesso")
+    
 if __name__ == "__main__":
-    main_submission(threshold=0.41)
+    main_submission()

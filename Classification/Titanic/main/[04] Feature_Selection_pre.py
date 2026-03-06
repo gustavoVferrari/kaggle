@@ -4,20 +4,20 @@ import yaml
 import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
+project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from src.features.feature_selection import FeatureSelectionOrchestrator
-from src.utils.plots import Pearson_correlation, Bar_plot
-from src.features.feature_eng import PreprocessingOrchestrator
+from functions.feature_selection import FeatureSelectionOrchestrator
+from utils.plots import Pearson_correlation, Bar_plot
+from Titanic.src.features.feature_eng import PreprocessingOrchestrator
 
 def Main_Feature_Selection():
     
         # 1. Carregar configurações
-    with open(os.path.join(project_root, "config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
         
-    with open(os.path.join(project_root, "config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)  
         
     X_train = pd.read_parquet(
@@ -47,11 +47,11 @@ def Main_Feature_Selection():
     
     Anova = feature_selection.apply(
         "Anova",
-        X_train_trans.filter(like='numerical'),
+        X_train_trans.filter(like='numerical_pipe_con'),
         y_train)
     
     mi = feature_selection.apply(
-        "MutualInformation", 
+        "MutualInformationClassif", 
         X_train_trans.filter(like='numerical'), 
         y_train)
     

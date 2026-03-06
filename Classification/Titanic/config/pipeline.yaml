@@ -2,17 +2,17 @@ features:
   cat_var:
       - Pclass    
       - Sex
-      - Ticket
       - Embarked
       - Title
-
+      - Cabin_1p
   num_dis:    
       - SibSp
       - Parch    
       - IsAlone
-      
+      - FamilySize      
   num_con:
       - Age
+      - Fare
 
   target: 
       - Survived

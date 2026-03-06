@@ -4,38 +4,38 @@ import os
 import sys
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
+project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from src.utils.utils import to_jsonl
-from src.features.make_dataset import save_data
-from src.features.single_model import ModelOrchestrator
-from src.features.model_selection import grid_search
-from src.features.train_model import train_model, save_model
-from src.features.evaluate_model import evaluate_model, MetricsOrchestrator
-from src.features.undersamplig import UnderSampligOrchestrator
-from src.features.predict_model import make_prediction
-from src.features.cross_validate import cross_validate
+from utils.utils import to_jsonl
+from functions.make_dataset import save_data
+from functions.single_model import ModelOrchestrator
+from functions.model_selection import grid_search
+from functions.train_model import train_model, save_model
+from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.undersamplig import UnderSampligOrchestrator
+from functions.predict_model import make_prediction
+from functions.cross_validate import cross_validate
 
 def main_single_model():
     
     # 1. Carregar configurações
-    with open(os.path.join(project_root, "config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
     
     # pipeline selection    
-    with open(os.path.join(project_root, "config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
     
     # model selection    
-    with open(os.path.join(project_root, "config/model.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
     print("Iniciando pipeline de Machine Learning...")
 
 
     # Get feature eng data
-    pipeline_name = "Pipeline1"
+    pipeline_name = "Pipeline3"
     
     X_train = pd.read_parquet(
        os.path.join(
@@ -83,7 +83,7 @@ def main_single_model():
         y_train)
     
     # 3. Model Selection 
-    model_name = "RandomForest"
+    model_name = "LogisticRegression"
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
@@ -104,13 +104,23 @@ def main_single_model():
     to_jsonl(df_cv, path_cv, mode='append')
     
     # 5. Evaulate model
-    metrics = evaluate_model(clf, X_val, y_val)
+    metrics_train = evaluate_model(clf, X_train, y_train)
     
-    print(f'report: {metrics['classification_report']}')
+    print('train metrics')
+    print(f'report: {metrics_train['classification_report']}')
+    print(f'acurácia: {metrics_train['accuracy_score']}')   
+    print(f'f1: {metrics_train['f1_score']}')
+    print(f'roc_auc: {metrics_train['roc_auc_score']}')
     print('\n')
-    print(f'acurácia: {metrics['accuracy_score']}')   
-    print(f'f1: {metrics['f1_score']}')
-    print(f'roc_auc: {metrics['roc_auc_score']}')
+    
+    metrics_val = evaluate_model(clf, X_val, y_val)
+    
+    print('Validation metrics')
+    print(f'report: {metrics_val['classification_report']}')
+    print(f'acurácia: {metrics_val['accuracy_score']}')   
+    print(f'f1: {metrics_val['f1_score']}')
+    print(f'roc_auc: {metrics_val['roc_auc_score']}')
+    print('\n')
     
     file_path = os.path.join(
         config['init_path'],
@@ -118,7 +128,8 @@ def main_single_model():
     
     # Save Metrics
     metric_orch = MetricsOrchestrator(output_dir=file_path)    
-    metric_orch.save_all_metrics(metrics, model_config['model_name'])    
+    metric_orch.save_all_metrics(metrics_train, model_config['model_name'], dataset='train') 
+    metric_orch.save_all_metrics(metrics_val, model_config['model_name'], dataset='validation')      
     
     # 6. Save Model    
     path_model = os.path.join(

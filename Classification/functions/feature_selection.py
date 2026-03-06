@@ -5,7 +5,7 @@ from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
 from feature_engine.selection import DropCorrelatedFeatures, SmartCorrelatedSelection
 from sklearn.ensemble import RandomForestClassifier
-
+from feature_engine.selection import SelectBySingleFeaturePerformance
 
 def apply_MutualInformation_reg(X_train, y_train):
     
@@ -138,6 +138,22 @@ class FeatureSelectionOrchestrator:
         # Obtém a função correspondente e a executa
         sampling_func = self.methods[method_name]
         return sampling_func(X_train, y_train)
+    
+def SelectSingleFeature(clf, metric, X_train:pd.DataFrame, y_train: pd.DataFrame, threshold = 0.5):    
+
+# set up the selector
+    sel = SelectBySingleFeaturePerformance(
+    variables=None,
+    estimator=clf,
+    scoring=metric,
+    cv=3,
+    threshold=threshold,
+)
+
+    # find predictive features
+    sel.fit(X_train, y_train)
+    
+    return [sel.feature_performance_, sel.feature_performance_std_]
         
 if __name__ == "__main__":
    print("Feature Selection carregado.")

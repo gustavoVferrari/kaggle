@@ -20,7 +20,7 @@ def apply_lightGBM_classifier(seed_):
             "lgb": [
                 LGBMClassifier(),
                  {
-                     'lgbmclassifier__n_estimators':[150, 200, 250, 300],
+                     'lgbmclassifier__n_estimators':[150, 200, 250, 300, 500],
                      'lgbmclassifier__learning_rate': [0.01, 0.05, 0.1, 0.2], 
                      'lgbmclassifier__max_depth': [3, 5, 7]
                      }
@@ -37,7 +37,7 @@ def apply_XGB_classifier(seed_):
             "xgb": [
                 XGBClassifier(random_state=seed_),
                  {
-                     'xgbclassifier__n_estimators':[100, 150, 200, 250],
+                     'xgbclassifier__n_estimators':[100, 150, 200, 250, 500],
                      'xgbclassifier__learning_rate': [0.01, 0.1, 0.2], 
                      'xgbclassifier__max_depth': [3, 5, 7],
                      'xgbclassifier__subsample':[0.6, 0.8, 1.0]
@@ -106,10 +106,12 @@ def apply_random_forest(seed_):
             "random_forest": [
                 RandomForestClassifier(random_state=seed_),
                 {
-                    'randomforestclassifier__n_estimators': [100, 150, 200, 250],
-                    'randomforestclassifier__criterion': ['gini', 'entropy'], 
-                    'randomforestclassifier__max_depth': [None, 4, 5, 7],
-                    'randomforestclassifier__min_samples_split': [2, 4, 6]
+                    'randomforestclassifier__n_estimators': [150, 200, 300, 400, 500],
+                    'randomforestclassifier__criterion': ['gini', 'entropy', 'log_loss'], 
+                    'randomforestclassifier__max_depth': [None, 4, 5, 7, 10],
+                    'randomforestclassifier__min_samples_split': [2, 5, 9],
+                    'randomforestclassifier__min_samples_leaf': [1, 2, 4],
+
                 }
             ]
         },

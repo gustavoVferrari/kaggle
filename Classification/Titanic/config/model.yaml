@@ -1,5 +1,6 @@
 single_model:
   cols_2_drop:  
-    - categorical_pipe__Sex_male
+    - numerical_pipe_dis__Parch
+
 
   

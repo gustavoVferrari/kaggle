@@ -1,59 +1,16 @@
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T19:06:10.989152"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T19:08:43.236008"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T19:10:34.530229"}
-{"model_name": "MLP_clf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T19:12:15.116016"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-12T19:57:08.355988"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-12T20:03:14.716271"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-12T20:04:52.043097"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-12T20:10:30.455502"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T20:12:36.531500"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T20:15:11.265940"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T20:17:15.707283"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-12T20:18:49.017482"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-13T15:16:10.278470"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-13T15:16:59.373479"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8100558659217877, "timestamp": "2026-02-13T15:17:57.500705"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-13T15:18:53.831009"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7653631284916201, "timestamp": "2026-02-13T15:19:27.190080"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7653631284916201, "timestamp": "2026-02-13T15:20:49.434329"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7094972067039106, "timestamp": "2026-02-13T15:45:44.174343"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.6815642458100558, "timestamp": "2026-02-13T15:46:35.806825"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-13T15:48:54.737629"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.7877094972067039, "timestamp": "2026-02-13T15:50:07.841497"}
-{"model_name": "MLP_clf", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-13T15:52:09.615093"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-19T16:58:16.319773"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7877094972067039, "timestamp": "2026-02-19T17:16:38.929278"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7821229050279329, "timestamp": "2026-02-19T17:18:03.608509"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7821229050279329, "timestamp": "2026-02-19T17:20:23.982425"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.7821229050279329, "timestamp": "2026-02-19T17:29:29.165921"}
-{"model_name": "gradboost", "metric_name": "accuracy_score", "score": 0.7821229050279329, "timestamp": "2026-02-19T17:36:04.875270"}
-{"model_name": "gradboost", "metric_name": "accuracy_score", "score": 0.7821229050279329, "timestamp": "2026-02-19T17:38:13.034674"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-19T17:38:59.128252"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8379888268156425, "timestamp": "2026-02-19T17:43:00.560349"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8212290502793296, "timestamp": "2026-02-19T18:57:21.243840"}
-{"model_name": "svc", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-20T10:13:50.327881"}
-{"model_name": "knn", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-20T10:16:18.336624"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8212290502793296, "timestamp": "2026-02-20T10:32:01.711188"}
-{"model_name": "xgb", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-20T11:02:04.603919"}
-{"model_name": "lgb", "metric_name": "accuracy_score", "score": 0.7821229050279329, "timestamp": "2026-02-20T12:01:52.836462"}
-{"model_name": "lgb", "metric_name": "accuracy_score", "score": 0.8435754189944135, "timestamp": "2026-02-20T12:44:36.070206"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-20T12:50:30.991837"}
-{"model_name": "xgb", "metric_name": "accuracy_score", "score": 0.8324022346368715, "timestamp": "2026-02-20T14:11:41.138646"}
-{"model_name": "knn", "metric_name": "accuracy_score", "score": 0.8156424581005587, "timestamp": "2026-02-20T17:48:48.622163"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8100558659217877, "timestamp": "2026-02-20T17:53:04.698921"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-23T10:16:05.258076"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8100558659217877, "timestamp": "2026-02-23T10:33:38.261077"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-23T10:54:01.760345"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-23T10:56:31.795972"}
-{"model_name": "svc", "metric_name": "accuracy_score", "score": 0.770949720670391, "timestamp": "2026-02-24T14:43:03.352613"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-24T15:17:35.633107"}
-{"model_name": "knn", "metric_name": "accuracy_score", "score": 0.8100558659217877, "timestamp": "2026-02-24T15:19:02.491051"}
-{"model_name": "svc", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-24T15:21:16.543467"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8044692737430168, "timestamp": "2026-02-24T15:22:08.513064"}
-{"model_name": "MLP_clf", "metric_name": "accuracy_score", "score": 0.8156424581005587, "timestamp": "2026-02-24T15:23:10.231420"}
-{"model_name": "adaboost", "metric_name": "accuracy_score", "score": 0.8156424581005587, "timestamp": "2026-02-24T15:23:59.747919"}
-{"model_name": "gradboost", "metric_name": "accuracy_score", "score": 0.8156424581005587, "timestamp": "2026-02-24T15:24:40.649630"}
-{"model_name": "xgb", "metric_name": "accuracy_score", "score": 0.8156424581005587, "timestamp": "2026-02-24T15:25:30.660076"}
-{"model_name": "lgb", "metric_name": "accuracy_score", "score": 0.7932960893854749, "timestamp": "2026-02-24T15:39:00.717976"}
-{"model_name": "lr", "metric_name": "accuracy_score", "score": 0.7988826815642458, "timestamp": "2026-02-24T15:40:46.992861"}
-{"model_name": "rf", "metric_name": "accuracy_score", "score": 0.8156424581005587, "timestamp": "2026-02-24T16:42:11.326900"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8117977528089888, "undersampling": "NeighbourhoodCleaningRule", "timestamp": "2026-03-04T08:41:53.695669"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7988826815642458, "undersampling": "NeighbourhoodCleaningRule", "timestamp": "2026-03-04T08:41:53.698225"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.7387640449438202, "undersampling": "NearMissV1", "timestamp": "2026-03-04T08:41:53.944200"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7653631284916201, "undersampling": "NearMissV1", "timestamp": "2026-03-04T08:41:53.946187"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.7921348314606742, "undersampling": "EditedNearestNeighbours", "timestamp": "2026-03-04T08:41:54.109313"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7932960893854749, "undersampling": "EditedNearestNeighbours", "timestamp": "2026-03-04T08:41:54.110956"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8370786516853933, "undersampling": "TomekLinks", "timestamp": "2026-03-04T08:41:54.297166"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7988826815642458, "undersampling": "TomekLinks", "timestamp": "2026-03-04T08:41:54.299167"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.7921348314606742, "undersampling": "RepeatedEditedNearestNeighbours", "timestamp": "2026-03-04T08:41:54.447948"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7932960893854749, "undersampling": "RepeatedEditedNearestNeighbours", "timestamp": "2026-03-04T08:41:54.457193"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8370786516853933, "undersampling": "OneSidedSelection", "timestamp": "2026-03-04T08:41:54.658186"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7988826815642458, "undersampling": "OneSidedSelection", "timestamp": "2026-03-04T08:41:54.660962"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8188202247191011, "undersampling": "NearMissV2", "timestamp": "2026-03-04T08:41:54.843102"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.8044692737430168, "undersampling": "NearMissV2", "timestamp": "2026-03-04T08:41:54.852336"}
+{"model_name": "lr", "dataset": "train", "metric_name": "accuracy_score", "score": 0.7963483146067416, "undersampling": "NearMissV3", "timestamp": "2026-03-04T08:41:55.026872"}
+{"model_name": "lr", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.7877094972067039, "undersampling": "NearMissV3", "timestamp": "2026-03-04T08:41:55.027864"}

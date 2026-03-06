@@ -7,9 +7,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.insert(0, project_root)
 
-from src.features.feature_selection import FeatureSelectionOrchestrator
-from src.utils.plots import Pearson_correlation, Bar_plot
-from src.utils.utils import to_jsonl
+from Classification.functions.feature_selection import FeatureSelectionOrchestrator
+from Classification.utils.plots import Pearson_correlation, Bar_plot
+from Classification.utils.utils import to_jsonl
 
 
 def Main_Feature_Selection():
