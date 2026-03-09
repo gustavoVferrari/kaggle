@@ -1,4 +1,4 @@
-init_path : "C:/Users/gustavo/Documents/Data Science/08-GitHub/kaggles/Classification/Titanic"
+init_path : "C:/Users/gustavo/Documents/Data Science/08-GitHub/kaggle/Classification/Titanic"
 competition: "titanic"
 
 ## Data gathering

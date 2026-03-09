@@ -17,7 +17,8 @@ from functions.undersamplig import UnderSampligOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate
 
-def main_single_model():
+
+def main_single_model_undersamplig():
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -76,11 +77,13 @@ def main_single_model():
         inplace=True)   
 
     # Apply UnderSamplig    
+    
     undersamplig_orchestrator = UnderSampligOrchestrator()    
     X_resampled, y_resampled = undersamplig_orchestrator.apply(
-        "TomekLinks", 
+        "InstanceHardnessThreshold", 
         X_train, 
-        y_train)
+        y_train
+        )
     
     # 3. Model Selection 
     model_name = "LogisticRegression"
@@ -128,8 +131,17 @@ def main_single_model():
     
     # Save Metrics
     metric_orch = MetricsOrchestrator(output_dir=file_path)    
-    metric_orch.save_all_metrics(metrics_train, model_config['model_name'], dataset='train') 
-    metric_orch.save_all_metrics(metrics_val, model_config['model_name'], dataset='validation')      
+    metric_orch.save_all_metrics(
+        metrics_train, 
+        model_config['model_name'], 
+        dataset='train', 
+        undersampling='InstanceHardnessThreshold') 
+    
+    metric_orch.save_all_metrics(
+        metrics_val, 
+        model_config['model_name'], 
+        dataset='validation', 
+        undersampling='InstanceHardnessThreshold')      
     
     # 6. Save Model    
     path_model = os.path.join(
@@ -153,4 +165,4 @@ def main_single_model():
     
    
 if __name__ == "__main__":
-    main_single_model()
+    main_single_model_undersamplig()

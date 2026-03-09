@@ -7,15 +7,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from utils.utils import to_jsonl
-from functions.make_dataset import save_data
 from functions.single_model import ModelOrchestrator
 from functions.model_selection import grid_search
-from functions.train_model import train_model, save_model
+from functions.train_model import train_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
-from functions.predict_model import make_prediction
-from functions.cross_validate import cross_validate
 
 def main_single_model_undersamplig():
     
@@ -65,7 +61,6 @@ def main_single_model_undersamplig():
             f"y_val_feat_eng_{pipeline_name}.parquet")
    )
 
-
     # Drop columns
     X_train.drop(
         columns=config_model['single_model']['cols_2_drop'],
@@ -85,7 +80,8 @@ def main_single_model_undersamplig():
         "NeighbourhoodCleaningRule",
         "NearMissV1",
         "NearMissV2",
-        "NearMissV3"
+        "NearMissV3",
+        "InstanceHardnessThreshold"
         }
     
     
@@ -104,8 +100,7 @@ def main_single_model_undersamplig():
         best_paramns = grid_search(X_resampled, y_resampled, model_config['models_gs'], 'roc_auc', cv=5) 
     
         # 4. train model
-        clf = train_model(X_resampled, y_resampled, model_config['model'], best_paramns)    
-         
+        clf = train_model(X_resampled, y_resampled, model_config['model'], best_paramns)             
        
         # 5. Evaulate model
         metrics_train = evaluate_model(clf, X_train, y_train)
@@ -131,8 +126,7 @@ def main_single_model_undersamplig():
         # Save Metrics
         metric_orch = MetricsOrchestrator(output_dir=file_path)    
         metric_orch.save_all_metrics(metrics_train, model_config['model_name'], dataset='train', undersampling=sampling_method) 
-        metric_orch.save_all_metrics(metrics_val, model_config['model_name'], dataset='validation', undersampling=sampling_method)      
-   
+        metric_orch.save_all_metrics(metrics_val, model_config['model_name'], dataset='validation', undersampling=sampling_method)     
     
    
 if __name__ == "__main__":
