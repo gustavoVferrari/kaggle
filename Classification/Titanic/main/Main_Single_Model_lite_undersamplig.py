@@ -86,7 +86,7 @@ def main_single_model_undersamplig():
         )
     
     # 3. Model Selection 
-    model_name = "LogisticRegression"
+    model_name = "RandomForest"
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
@@ -135,19 +135,19 @@ def main_single_model_undersamplig():
         metrics_train, 
         model_config['model_name'], 
         dataset='train', 
-        undersampling='InstanceHardnessThreshold') 
+        undersampling='OneSidedSelection') 
     
     metric_orch.save_all_metrics(
         metrics_val, 
         model_config['model_name'], 
         dataset='validation', 
-        undersampling='InstanceHardnessThreshold')      
+        undersampling='OneSidedSelection')      
     
     # 6. Save Model    
     path_model = os.path.join(
         config['init_path'],
         config['single_model']['pkl'],
-        f'{model_config['model_name']}.pkl')
+        f'{model_config['model_name']}_{pipeline_name}.pkl')
     
     save_model(clf, path_model)
     

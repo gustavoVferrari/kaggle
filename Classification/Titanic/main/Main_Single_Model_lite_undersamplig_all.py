@@ -93,7 +93,7 @@ def main_single_model_undersamplig():
             y_train)
     
         # 3. Model Selection 
-        model_name = "LogisticRegression"
+        model_name = "RandomForest"
         model_orchestrator = ModelOrchestrator(seed_=23)    
         model_config = model_orchestrator.apply(model_name)    
             

@@ -4,22 +4,21 @@ import yaml
 import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
+project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from Classification.functions.feature_selection import FeatureSelectionOrchestrator
-from Classification.utils.plots import Pearson_correlation, Bar_plot
-from Classification.utils.utils import to_jsonl
+from functions.feature_selection import FeatureSelectionOrchestrator
+from utils.plots import Pearson_correlation, Bar_plot
+from utils.utils import to_jsonl
 
 
 def Main_Feature_Selection():
     
         # 1. Carregar configurações
-    with open(os.path.join(project_root, "config/config.yaml"), "r") as f:
-        config = yaml.safe_load(f)
+    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
+        config = yaml.safe_load(f)        
         
-        
-    pipeline_name = "Pipeline1"
+    pipeline_name = "Pipeline3"
         
     X_train = pd.read_parquet(
         os.path.join(
@@ -54,7 +53,7 @@ def Main_Feature_Selection():
         config['init_path'],
         config['reports']['figures'])
     
-    Pearson_correlation(corr, title = f"corr_{pipeline_name}", path=path_)    
+    Pearson_correlation(corr, title = f"corr_{pipeline_name}", path=path_) 
     
     Bar_plot(Anova, title = f"Anova_{pipeline_name}" , path=path_)
     

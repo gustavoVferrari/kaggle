@@ -77,7 +77,7 @@ def main_single_model_lite():
 
     # 3. Model Selection 
     
-    model_name = "XGradBoost"
+    model_name = "RandomForest"
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
@@ -130,7 +130,7 @@ def main_single_model_lite():
     path_model = os.path.join(
         config['init_path'],
         config['single_model']['pkl'],
-        f'{model_config['model_name']}_{pipeline_name}.pkl')    
+        f'{model_config['model_name']}_{pipeline_name}.pkl')     
     save_model(clf, path_model)
     
     # 7. Make predict 

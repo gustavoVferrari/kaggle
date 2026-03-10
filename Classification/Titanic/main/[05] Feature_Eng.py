@@ -20,10 +20,6 @@ def main_feature_eng():
     # pipeline selection    
     with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
-    
-    # # model selection    
-    # with open(os.path.join(project_root, "config/model.yaml"), "r") as f:
-    #     config_model = yaml.safe_load(f)
 
     print("Iniciando pipeline de Feature enginneering...")
     
@@ -57,7 +53,7 @@ def main_feature_eng():
         categorical_var=config_pipe['features']['cat_var'])
     
     # define pipiline
-    pipeline_name = "Pipeline3"
+    pipeline_name = "Pipeline1"
     
     pipe = preprocessor.apply(pipeline_name)    
     X_train = pipe.fit_transform(X_train, y_train)

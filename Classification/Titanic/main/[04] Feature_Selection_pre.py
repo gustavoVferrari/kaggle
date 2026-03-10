@@ -8,8 +8,8 @@ project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
 from functions.feature_selection import FeatureSelectionOrchestrator
-from utils.plots import Pearson_correlation, Bar_plot
 from Titanic.src.features.feature_eng import PreprocessingOrchestrator
+from utils.plots import Pearson_correlation, Bar_plot
 
 def Main_Feature_Selection():
     
@@ -33,8 +33,7 @@ def Main_Feature_Selection():
         numerical_dis=config_pipe['features']['num_dis'], 
         categorical_var=config_pipe['features']['cat_var'])
     
-    pipe = preprocessor.apply("preprocessing")
-        
+    pipe = preprocessor.apply("preprocessing")        
     X_train_trans = pipe.fit_transform(X_train)    
     
         
