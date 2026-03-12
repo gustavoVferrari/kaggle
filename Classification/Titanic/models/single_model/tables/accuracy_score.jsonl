@@ -40,3 +40,5 @@
 {"model_name": "rf", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.770949720670391, "undersampling": "OneSidedSelection", "timestamp": "2026-03-10T12:22:12.110197"}
 {"model_name": "rf", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8581460674157303, "undersampling": null, "timestamp": "2026-03-10T12:28:14.012533"}
 {"model_name": "rf", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.776536312849162, "undersampling": null, "timestamp": "2026-03-10T12:28:14.016048"}
+{"model_name": "lgb", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8426966292134831, "undersampling": null, "timestamp": "2026-03-12T12:20:30.093076"}
+{"model_name": "lgb", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.8100558659217877, "undersampling": null, "timestamp": "2026-03-12T12:20:30.098486"}

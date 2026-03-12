@@ -40,3 +40,5 @@
 {"model_name": "rf", "dataset": "validation", "metric_name": "f1_score", "score": 0.7734806629834254, "undersampling": "OneSidedSelection", "timestamp": "2026-03-10T12:22:12.110197", "average": "weighted"}
 {"model_name": "rf", "dataset": "train", "metric_name": "f1_score", "score": 0.8031189083820662, "undersampling": null, "timestamp": "2026-03-10T12:28:14.013039", "average": "weighted"}
 {"model_name": "rf", "dataset": "validation", "metric_name": "f1_score", "score": 0.7183098591549296, "undersampling": null, "timestamp": "2026-03-10T12:28:14.017047", "average": "weighted"}
+{"model_name": "lgb", "dataset": "train", "metric_name": "f1_score", "score": 0.7695473251028807, "undersampling": null, "timestamp": "2026-03-12T12:20:30.094161", "average": "weighted"}
+{"model_name": "lgb", "dataset": "validation", "metric_name": "f1_score", "score": 0.7605633802816901, "undersampling": null, "timestamp": "2026-03-12T12:20:30.098486", "average": "weighted"}

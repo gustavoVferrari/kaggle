@@ -37,6 +37,8 @@ def main_single_model_lite():
     # Get feature eng data
     pipeline_name = "Pipeline3"
     
+    
+    # Datasets
     X_train = pd.read_parquet(
        os.path.join(
            config['init_path'],
@@ -77,7 +79,7 @@ def main_single_model_lite():
 
     # 3. Model Selection 
     
-    model_name = "RandomForest"
+    model_name = "LGBM"
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          

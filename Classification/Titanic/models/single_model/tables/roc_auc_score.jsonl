@@ -40,3 +40,5 @@
 {"model_name": "rf", "dataset": "validation", "metric_name": "roc_auc_score", "score": 0.8759974259974261, "undersampling": "OneSidedSelection", "timestamp": "2026-03-10T12:22:12.111198", "average": "weighted", "multi_class": "ovr"}
 {"model_name": "rf", "dataset": "train", "metric_name": "roc_auc_score", "score": 0.9081660951996774, "undersampling": null, "timestamp": "2026-03-10T12:28:14.014048", "average": "weighted", "multi_class": "ovr"}
 {"model_name": "rf", "dataset": "validation", "metric_name": "roc_auc_score", "score": 0.8786357786357787, "undersampling": null, "timestamp": "2026-03-10T12:28:14.018090", "average": "weighted", "multi_class": "ovr"}
+{"model_name": "lgb", "dataset": "train", "metric_name": "roc_auc_score", "score": 0.8843619739142127, "undersampling": null, "timestamp": "2026-03-12T12:20:30.096167", "average": "weighted", "multi_class": "ovr"}
+{"model_name": "lgb", "dataset": "validation", "metric_name": "roc_auc_score", "score": 0.8835907335907336, "undersampling": null, "timestamp": "2026-03-12T12:20:30.099928", "average": "weighted", "multi_class": "ovr"}
