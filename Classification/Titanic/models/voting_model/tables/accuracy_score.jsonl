@@ -1,0 +1,2 @@
+{"model_name": "voting_model", "dataset": "train", "metric_name": "accuracy_score", "score": 0.8525280898876404, "undersampling": null, "timestamp": "2026-03-12T17:27:13.369378"}
+{"model_name": "voting_model", "dataset": "validation", "metric_name": "accuracy_score", "score": 0.8044692737430168, "undersampling": null, "timestamp": "2026-03-12T17:27:13.385923"}

@@ -21,3 +21,9 @@ single_model:
   tables: "models/single_model/tables"
   predicts: "models/single_model/predictions"
 
+voting_model:
+  pkl: "models/voting_model/pkl"
+  figures: "models/voting_model/plots"
+  tables: "models/voting_model/tables"
+  predicts: "models/voting_model/predictions"
+
