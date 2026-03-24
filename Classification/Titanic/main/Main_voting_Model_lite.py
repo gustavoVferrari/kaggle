@@ -122,21 +122,8 @@ def main_voting_model_lite():
     model_name = 'voting_model'
     
     save_data(path_data, f"X_val_pred_{model_name}", predictions)
-    save_data(path_data, f"X_val_proba_{model_name}", probabilities)    
-    
-    # # threshold analysis
-    # path_threshold = os.path.join(
-    #     config['init_path'],
-    #     config['single_model']['figures'])
-    
-    # threshold_point =threshold_optimization(
-    #     y_val, 
-    #     probabilities, 
-    #     model_name=model_name, 
-    #     path=path_threshold)
-    
-    # print(threshold_point)
-    
+    save_data(path_data, f"X_val_proba_{model_name}", probabilities)        
+   
    
 if __name__ == "__main__":
     main_voting_model_lite()
