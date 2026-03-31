@@ -13,7 +13,6 @@ from functions.train_model import train_voting_model, save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate
-from functions.threshold_analysis import threshold_optimization
 from functions.voting_model import voting_model, models
 
 def main_voting_model_lite():
