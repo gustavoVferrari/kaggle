@@ -1,0 +1,2 @@
+{"model_name": "voting_model", "dataset": "train", "metric_name": "roc_auc_score", "score": 0.8917868428129623, "undersampling": null, "timestamp": "2026-03-12T17:27:13.385181", "average": "weighted", "multi_class": "ovr"}
+{"model_name": "voting_model", "dataset": "validation", "metric_name": "roc_auc_score", "score": 0.8874517374517373, "undersampling": null, "timestamp": "2026-03-12T17:27:13.388172", "average": "weighted", "multi_class": "ovr"}
