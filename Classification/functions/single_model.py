@@ -11,8 +11,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from lightgbm import LGBMClassifier
 
-
-
 def apply_lightGBM_classifier(seed_):
     """Apply LGBMClassifiermodel configuration."""
     return dict(
@@ -186,12 +184,13 @@ class ModelOrchestrator:
         
         self.model_methods = list(self.methods.keys())
         
-    def apply(self, method_name):
+    def apply(self, method_name, **kwargs):
         """
         Retorna a configuração do modelo escolhido.
         
         Args:
             method_name (str): O nome do modelo a ser aplicado.
+            **kwargs: parâmetros adicionais (ex: input_dim para ANN)
             
         Returns:
             dict: Dicionário contendo models_gs, model e model_name.
