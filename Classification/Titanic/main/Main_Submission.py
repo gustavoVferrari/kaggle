@@ -11,7 +11,7 @@ sys.path.insert(0, project_root)
 
 
 
-def main_submission(threshold=0.5):
+def main_submission(threshold: float, pipeline_name: str, model_name: str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -27,10 +27,7 @@ def main_submission(threshold=0.5):
 
     
     
-    # Get feature eng data
-    pipeline_name = "Pipeline3"
-    model_name = "rf"
-    
+    # Get feature eng data    
     X_test = pd.read_parquet(
        os.path.join(
            config['init_path'],
@@ -60,10 +57,8 @@ def main_submission(threshold=0.5):
     with open(model_path, "rb") as file:
         model = pickle.load(file)
         
-    # predict    
-    # y_test_id.loc[:,f'{config_pipe['features']['target'][0]}'] = model.predict(X_test)
-    
-    y_test_id.loc[:,f'{config_pipe['features']['target'][0]}'] = np.where(model.predict_proba(X_test)[:,1]>=threshold,1,0)
+    # predict        
+    y_test_id.loc[:,f"{config_pipe['features']['target'][0]}"] = np.where(model.predict_proba(X_test)[:,1]>=threshold,1,0)
     
     y_test_id.to_csv(
         os.path.join(
@@ -75,4 +70,4 @@ def main_submission(threshold=0.5):
     print("dados salvos com sucesso")
     
 if __name__ == "__main__":
-    main_submission()
+    main_submission(threshold=0.5, pipeline_name="Pipeline3", model_name="rf")

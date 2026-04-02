@@ -32,11 +32,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
-    print("Iniciando pipeline de Machine Learning...")
-
-
-    # Get feature eng data
-    # pipeline_name = "Pipeline3"
+    print("Iniciando modelo de Machine Learning...")
     
     X_train = pd.read_parquet(
        os.path.join(
@@ -84,7 +80,6 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
         )
     
     # 3. Model Selection 
-    # model_name = "RandomForest"
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
@@ -108,19 +103,19 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     metrics_train = evaluate_model(clf, X_train, y_train)
     
     print('train metrics')
-    print(f'report: {metrics_train['classification_report']}')
-    print(f'acurácia: {metrics_train['accuracy_score']}')   
-    print(f'f1: {metrics_train['f1_score']}')
-    print(f'roc_auc: {metrics_train['roc_auc_score']}')
+    print(f"report: {metrics_train['classification_report']}")
+    print(f"acurácia: {metrics_train['accuracy_score']}")   
+    print(f"f1: {metrics_train['f1_score']}")
+    print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
     
     metrics_val = evaluate_model(clf, X_val, y_val)
     
     print('Validation metrics')
-    print(f'report: {metrics_val['classification_report']}')
-    print(f'acurácia: {metrics_val['accuracy_score']}')   
-    print(f'f1: {metrics_val['f1_score']}')
-    print(f'roc_auc: {metrics_val['roc_auc_score']}')
+    print(f"report: {metrics_val['classification_report']}")
+    print(f"acurácia: {metrics_val['accuracy_score']}")   
+    print(f"f1: {metrics_val['f1_score']}")
+    print(f"roc_auc: {metrics_val['roc_auc_score']}")
     print('\n')
     
     file_path = os.path.join(
@@ -145,7 +140,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     path_model = os.path.join(
         config['init_path'],
         config['single_model']['pkl'],
-        f'{model_config['model_name']}_{pipeline_name}.pkl')
+        f"{model_config['model_name']}_{pipeline_name}.pkl")
     
     save_model(clf, path_model)
     
@@ -166,5 +161,5 @@ if __name__ == "__main__":
     main_single_model_undersamplig(
         pipeline_name="Pipeline3", 
         model_name="RandomForest",
-        undersampling_method="OneSidedSelection"
+        undersampling_method="TomekLinks"
         )

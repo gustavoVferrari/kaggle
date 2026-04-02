@@ -35,7 +35,6 @@ def FeatureCreation(dataset_path:str, save_path:str, train:bool=True) -> None:
     df['Cabin_1p'] = df['Cabin'].apply(lambda row: row[:1] if pd.notnull(row) else row)
         
     # Engenharia de Atributos: Agrupamento de Embarque e Tamanho de Família
-    df['Embarked_mod'] = df['Embarked'].map({'S': 'SQ', 'Q': 'SQ', 'C': 'C'})
     df['FamilySize'] = df['SibSp'] + df['Parch'] + 1
     df['IsAlone'] = (df['FamilySize'] == 1).astype(int)    
     

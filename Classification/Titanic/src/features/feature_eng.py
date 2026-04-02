@@ -244,7 +244,7 @@ def apply_preprocessing_pipeline_3(numerical_con:list,numerical_dis:list,categor
     
     pipe = make_pipeline(
         preprocessor.set_output(transform="pandas"),
-        # StandardScaler().set_output(transform="pandas")
+        StandardScaler().set_output(transform="pandas")
         
         )
     

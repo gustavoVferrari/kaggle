@@ -13,7 +13,7 @@ from functions.train_model import train_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
 
-def main_single_model_undersamplig():
+def main_single_model_undersamplig(pipeline_name: str, model_name: str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -27,11 +27,10 @@ def main_single_model_undersamplig():
     with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
-    print("Iniciando pipeline de Machine Learning...")
+    print("Iniciando Undersamplig methods analysis...")
 
 
     # Get feature eng data
-    pipeline_name = "Pipeline3"
     
     X_train = pd.read_parquet(
        os.path.join(
@@ -93,7 +92,6 @@ def main_single_model_undersamplig():
             y_train)
     
         # 3. Model Selection 
-        model_name = "LGBM"
         model_orchestrator = ModelOrchestrator(seed_=23)    
         model_config = model_orchestrator.apply(model_name)    
             
@@ -106,17 +104,17 @@ def main_single_model_undersamplig():
         metrics_train = evaluate_model(clf, X_train, y_train)
         
         print('train metrics')
-        print(f'acurácia: {metrics_train['accuracy_score']}')   
-        print(f'f1: {metrics_train['f1_score']}')
-        print(f'roc_auc: {metrics_train['roc_auc_score']}')
+        print(f"acurácia: {metrics_train['accuracy_score']}")   
+        print(f"f1: {metrics_train['f1_score']}")
+        print(f"roc_auc: {metrics_train['roc_auc_score']}")
         print('\n')
     
         metrics_val = evaluate_model(clf, X_val, y_val)
         
         print('Validation metrics')
-        print(f'acurácia: {metrics_val['accuracy_score']}')   
-        print(f'f1: {metrics_val['f1_score']}')
-        print(f'roc_auc: {metrics_val['roc_auc_score']}')
+        print(f"acurácia: {metrics_val['accuracy_score']}")   
+        print(f"f1: {metrics_val['f1_score']}")
+        print(f"roc_auc: {metrics_val['roc_auc_score']}")
         print('\n')
     
         file_path = os.path.join(
@@ -139,4 +137,4 @@ def main_single_model_undersamplig():
     
    
 if __name__ == "__main__":
-    main_single_model_undersamplig()
+    main_single_model_undersamplig(pipeline_name="Pipeline3", model_name="RandomForest")

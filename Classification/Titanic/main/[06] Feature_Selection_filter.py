@@ -12,13 +12,12 @@ from utils.plots import Pearson_correlation, Bar_plot
 from utils.utils import to_jsonl
 
 
-def Main_Feature_Selection():
+def Main_Feature_Selection(pipeline_name: str):
     
         # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)        
-        
-    pipeline_name = "Pipeline3"
+  
         
     X_train = pd.read_parquet(
         os.path.join(
@@ -60,4 +59,11 @@ def Main_Feature_Selection():
     Bar_plot(mi, title = f"Mutual_information_{pipeline_name}", path=path_)
     
 if __name__ == "__main__":
-    Main_Feature_Selection()
+    print("-------------------------------------------")
+    Main_Feature_Selection(pipeline_name = "Pipeline3")
+    print("-------------------------------------------")
+    print("\n")
+    Main_Feature_Selection(pipeline_name = "Pipeline2")
+    print("-------------------------------------------")
+    print("\n")
+    Main_Feature_Selection(pipeline_name = "Pipeline1")

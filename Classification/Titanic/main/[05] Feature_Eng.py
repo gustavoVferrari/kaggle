@@ -11,7 +11,7 @@ from functions.make_dataset import split_data, save_data
 from Titanic.src.features.feature_eng import PreprocessingOrchestrator
 
 
-def main_feature_eng():
+def main_feature_eng(pipeline_name: str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -21,7 +21,7 @@ def main_feature_eng():
     with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
 
-    print("Iniciando pipeline de Feature enginneering...")
+    print(f"Iniciando pipeline de Feature enginneering {pipeline_name}...")
     
     # 1. Carregar dados processados
     df = pd.read_parquet(
@@ -52,8 +52,7 @@ def main_feature_eng():
         numerical_dis=config_pipe['features']['num_dis'], 
         categorical_var=config_pipe['features']['cat_var'])
     
-    # define pipiline
-    pipeline_name = "Pipeline1"
+    # define pipiline   
     
     pipe = preprocessor.apply(pipeline_name)    
     X_train = pipe.fit_transform(X_train, y_train)
@@ -78,4 +77,6 @@ def main_feature_eng():
     
    
 if __name__ == "__main__":
-    main_feature_eng()
+    main_feature_eng(pipeline_name = "Pipeline3")
+    # main_feature_eng(pipeline_name = "Pipeline2")
+    # main_feature_eng(pipeline_name = "Pipeline1")

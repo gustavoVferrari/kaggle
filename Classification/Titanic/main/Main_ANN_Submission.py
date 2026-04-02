@@ -71,4 +71,4 @@ def main_ann_submission(pipeline_name: str):
     print("dados salvos com sucesso")
     
 if __name__ == "__main__":
-    main_ann_submission(pipeline_name='pipeline3')
+    main_ann_submission(pipeline_name='Pipeline3')

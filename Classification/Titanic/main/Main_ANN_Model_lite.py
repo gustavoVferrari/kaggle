@@ -9,14 +9,10 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from utils.utils import to_jsonl
 from functions.make_dataset import save_data
-from functions.single_model import ModelOrchestrator
-from functions.model_selection import grid_search
-from functions.train_model import train_model, save_model
+from functions.train_model import save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
-from functions.cross_validate import cross_validate
 from functions.ann_model import KerasBinaryClassifier
 
 def main_ann_model_lite(pipeline_name: str):
@@ -128,4 +124,4 @@ def main_ann_model_lite(pipeline_name: str):
    
    
 if __name__ == "__main__":
-    main_ann_model_lite(pipeline_name='pipeline3')
+    main_ann_model_lite(pipeline_name='Pipeline3')

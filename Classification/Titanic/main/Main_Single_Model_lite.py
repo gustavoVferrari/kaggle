@@ -17,7 +17,7 @@ from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate
 from functions.threshold_analysis import threshold_optimization
 
-def main_single_model_lite():
+def main_single_model_lite(pipeline_name:str, model_name:str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -34,9 +34,7 @@ def main_single_model_lite():
     print("Iniciando pipeline de Machine Learning...")
 
 
-    # Get feature eng data
-    pipeline_name = "Pipeline3"
-    
+    # Get feature eng data   
     
     # Datasets
     X_train = pd.read_parquet(
@@ -77,9 +75,7 @@ def main_single_model_lite():
         inplace=True)   
 
 
-    # 3. Model Selection 
-    
-    model_name = "LGBM"
+    # 3. Model Selection   
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
@@ -104,19 +100,19 @@ def main_single_model_lite():
     metrics_train = evaluate_model(clf, X_train, y_train)
     
     print('train metrics')
-    print(f'report: {metrics_train['classification_report']}')
-    print(f'acurácia: {metrics_train['accuracy_score']}')   
-    print(f'f1: {metrics_train['f1_score']}')
-    print(f'roc_auc: {metrics_train['roc_auc_score']}')
+    print(f"report: {metrics_train['classification_report']}")
+    print(f"acurácia: {metrics_train['accuracy_score']}")   
+    print(f"f1: {metrics_train['f1_score']}")
+    print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
     
     metrics_val = evaluate_model(clf, X_val, y_val)
     
     print('Validation metrics')
-    print(f'report: {metrics_val['classification_report']}')
-    print(f'acurácia: {metrics_val['accuracy_score']}')   
-    print(f'f1: {metrics_val['f1_score']}')
-    print(f'roc_auc: {metrics_val['roc_auc_score']}')
+    print(f"report: {metrics_val['classification_report']}")
+    print(f"acurácia: {metrics_val['accuracy_score']}")   
+    print(f"f1: {metrics_val['f1_score']}")
+    print(f"roc_auc: {metrics_val['roc_auc_score']}")
     print('\n')
     
     # Save Metrics
@@ -132,7 +128,7 @@ def main_single_model_lite():
     path_model = os.path.join(
         config['init_path'],
         config['single_model']['pkl'],
-        f'{model_config['model_name']}_{pipeline_name}.pkl')     
+        f"{model_config['model_name']}_{pipeline_name}.pkl")     
     save_model(clf, path_model)
     
     # 7. Make predict 
@@ -161,4 +157,4 @@ def main_single_model_lite():
     
    
 if __name__ == "__main__":
-    main_single_model_lite()
+    main_single_model_lite(pipeline_name="Pipeline3", model_name="RandomForest")
