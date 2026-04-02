@@ -1,9 +1,0 @@
-single_model:
-  cols_2_drop:  
-    - numerical_pipe_dis__Parch
-voting_model:
-  cols_2_drop:
-    - numerical_pipe_dis__Parch
-
-
-  

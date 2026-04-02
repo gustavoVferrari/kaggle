@@ -18,7 +18,7 @@ from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate
 
 
-def main_single_model_undersamplig():
+def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampling_method:str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -36,7 +36,7 @@ def main_single_model_undersamplig():
 
 
     # Get feature eng data
-    pipeline_name = "Pipeline3"
+    # pipeline_name = "Pipeline3"
     
     X_train = pd.read_parquet(
        os.path.join(
@@ -65,8 +65,7 @@ def main_single_model_undersamplig():
            config['data']['feature_eng'],
             f"y_val_feat_eng_{pipeline_name}.parquet")
    )
-
-
+    
     # Drop columns
     X_train.drop(
         columns=config_model['single_model']['cols_2_drop'],
@@ -76,17 +75,16 @@ def main_single_model_undersamplig():
         columns=config_model['single_model']['cols_2_drop'],
         inplace=True)   
 
-    # Apply UnderSamplig    
-    
+    # Apply UnderSamplig        
     undersamplig_orchestrator = UnderSampligOrchestrator()    
     X_resampled, y_resampled = undersamplig_orchestrator.apply(
-        "InstanceHardnessThreshold", 
+        undersampling_method, 
         X_train, 
         y_train
         )
     
     # 3. Model Selection 
-    model_name = "RandomForest"
+    # model_name = "RandomForest"
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
@@ -135,13 +133,13 @@ def main_single_model_undersamplig():
         metrics_train, 
         model_config['model_name'], 
         dataset='train', 
-        undersampling='OneSidedSelection') 
+        undersampling=undersampling_method) 
     
     metric_orch.save_all_metrics(
         metrics_val, 
         model_config['model_name'], 
         dataset='validation', 
-        undersampling='OneSidedSelection')      
+        undersampling=undersampling_method)      
     
     # 6. Save Model    
     path_model = os.path.join(
@@ -165,4 +163,8 @@ def main_single_model_undersamplig():
     
    
 if __name__ == "__main__":
-    main_single_model_undersamplig()
+    main_single_model_undersamplig(
+        pipeline_name="Pipeline3", 
+        model_name="RandomForest",
+        undersampling_method="OneSidedSelection"
+        )

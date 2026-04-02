@@ -124,9 +124,18 @@ def main_single_model_undersamplig():
             config['single_model']['tables'])          
         
         # Save Metrics
-        metric_orch = MetricsOrchestrator(output_dir=file_path)    
-        metric_orch.save_all_metrics(metrics_train, model_config['model_name'], dataset='train', undersampling=sampling_method) 
-        metric_orch.save_all_metrics(metrics_val, model_config['model_name'], dataset='validation', undersampling=sampling_method)     
+        metric_orch = MetricsOrchestrator(output_dir=file_path)   
+         
+        metric_orch.save_all_metrics(
+            metrics_train, model_config['model_name'], 
+            dataset='train', 
+            undersampling=sampling_method) 
+        
+        metric_orch.save_all_metrics(
+            metrics_val, 
+            model_config['model_name'], 
+            dataset='validation', 
+            undersampling=sampling_method)     
     
    
 if __name__ == "__main__":
