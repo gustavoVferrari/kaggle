@@ -5,6 +5,7 @@
 *.jsonl
 *.json
 *.yaml
+*.zip
 
 # Modelos treinados
 *.pkl
