@@ -9,16 +9,15 @@ sys.path.insert(0, project_root)
 
 from utils.utils import to_jsonl
 from functions.make_dataset import save_data
-from functions.single_model import ModelOrchestrator
-from functions.model_selection import grid_search
+from functions.multi_model_gs import ModelOrchestrator
+from functions.model_selection import grid_search_models
 from functions.train_model import train_model, save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
-from functions.undersamplig import UnderSampligOrchestrator
 from functions.predict_model import make_prediction
-from functions.cross_validate import cross_validate
+from functions.cross_validate import cross_validate_StratifiedKFold
+from functions.threshold_analysis import threshold_optimization
 
-
-def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampling_method:str):
+def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -32,8 +31,12 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
-    print("Iniciando modelo de Machine Learning...")
+    print("Iniciando pipeline de Machine Learning...")
+
+
+    # Get feature eng data   
     
+    # Datasets
     X_train = pd.read_parquet(
        os.path.join(
            config['init_path'],
@@ -61,7 +64,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
            config['data']['feature_eng'],
             f"y_val_feat_eng_{pipeline_name}.parquet")
    )
-    
+
     # Drop columns
     X_train.drop(
         columns=config_model['single_model']['cols_2_drop'],
@@ -71,36 +74,50 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
         columns=config_model['single_model']['cols_2_drop'],
         inplace=True)   
 
-    # Apply UnderSamplig        
-    undersamplig_orchestrator = UnderSampligOrchestrator()    
-    X_resampled, y_resampled = undersamplig_orchestrator.apply(
-        undersampling_method, 
-        X_train, 
-        y_train
-        )
-    
-    # 3. Model Selection 
+
+    # 3. Model Selection   
     model_orchestrator = ModelOrchestrator(seed_=23)    
     model_config = model_orchestrator.apply(model_name)    
          
-    best_paramns = grid_search(X_resampled, y_resampled, model_config['models_gs'], 'roc_auc', cv=5) 
-    
+    best_paramns = grid_search_models(
+        X_train, 
+        y_train,
+        model_config['models_gs'], 
+        scoring=scoring, 
+        cv=5
+        )     
+        
     # 4. train model
-    clf = train_model(X_resampled, y_resampled, model_config['model'], best_paramns)
+    model_clf = train_model(
+        X_train, 
+        y_train, 
+        model_config['model'], 
+        best_paramns
+        )
     
-    # cross-validade
-    df_cv = cross_validate(X_resampled, y_resampled, model_config, best_paramns)
+    # 5. cross-validation
+    # 
+    # # df_cv = cross_validate_stratified_gs(X_train, y_train, model_config, best_paramns)
+    
+    df_cv = cross_validate_StratifiedKFold(
+        X_train, 
+        y_train, 
+        model_clf,
+        model_config,
+        scoring=scoring
+        )
     
     print(df_cv)
+    
     path_cv = os.path.join(
         config['init_path'],
         config['single_model']['tables'],
-        "cross_validate.jsonl")
-    
+        "cross_validate.jsonl")    
     to_jsonl(df_cv, path_cv, mode='append')
     
+    
     # 5. Evaulate model
-    metrics_train = evaluate_model(clf, X_train, y_train)
+    metrics_train = evaluate_model(model_clf, X_train, y_train)
     
     print('train metrics')
     print(f"report: {metrics_train['classification_report']}")
@@ -118,48 +135,49 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     print(f"roc_auc: {metrics_val['roc_auc_score']}")
     print('\n')
     
+    # Save Metrics
     file_path = os.path.join(
         config['init_path'],
-        config['single_model']['tables'])          
-    
-    # Save Metrics
+        config['single_model']['tables']
+        )     
     metric_orch = MetricsOrchestrator(output_dir=file_path)    
-    metric_orch.save_all_metrics(
-        metrics_train, 
-        model_config['model_name'], 
-        dataset='train', 
-        undersampling=undersampling_method) 
-    
-    metric_orch.save_all_metrics(
-        metrics_val, 
-        model_config['model_name'], 
-        dataset='validation', 
-        undersampling=undersampling_method)      
+    metric_orch.save_all_metrics(metrics_train, model_config['model_name'], dataset='train') 
+    metric_orch.save_all_metrics(metrics_val, model_config['model_name'], dataset='validation')    
     
     # 6. Save Model    
     path_model = os.path.join(
         config['init_path'],
         config['single_model']['pkl'],
-        f"{model_config['model_name']}_{pipeline_name}.pkl")
-    
+        f"{model_config['model_name']}_{pipeline_name}.pkl")     
     save_model(clf, path_model)
     
-    # 7. Make predict
+    # 7. Make predict 
     predictions, probabilities = make_prediction(clf, X_val)
-    
+        
     path_data = os.path.join(
         config['init_path'],
-        config['single_model']['predicts'])
-    
+        config['single_model']['predicts'])    
     model_name = model_config['model_name']
     
     save_data(path_data, f"X_val_pred_{model_name}", predictions)
     save_data(path_data, f"X_val_proba_{model_name}", probabilities)    
     
+    # threshold analysis
+    path_threshold = os.path.join(
+        config['init_path'],
+        config['single_model']['figures'])
+    
+    threshold_point =threshold_optimization(
+        y_val, 
+        probabilities, 
+        model_name=model_name, 
+        path=path_threshold)
+    
+    print(threshold_point)
+    
    
 if __name__ == "__main__":
-    main_single_model_undersamplig(
+    main_single_model_lite(
         pipeline_name="Pipeline3", 
-        model_name="RandomForest",
-        undersampling_method="TomekLinks"
-        )
+        model_name="RandomForest", 
+        scoring = "roc_auc")

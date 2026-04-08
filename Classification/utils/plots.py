@@ -127,3 +127,31 @@ def Bar_plot(s:pd.Series, title, path=None):
             bbox_inches="tight"
             )
         plt.close()  
+        
+def cross_validation_plot(
+    save_path,
+    model_name, 
+    df:pd.DataFrame, 
+    X:str='val_score', 
+    y:str='fold'
+    ):
+    
+    sns.pointplot(
+        data=df, 
+        y='val_score', 
+        x='fold')
+    
+    plt.title(f'score per fold {model_name}')
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    
+def separation_plan_plot(
+    save_path,
+    model_name:str,
+    df:pd.DataFrame,     
+    target:str):
+
+    sns.histplot(data=df, x='probability', hue=target)
+    plt.title(f'separation plan {model_name}')
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close() 
