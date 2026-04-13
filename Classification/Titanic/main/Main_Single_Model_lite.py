@@ -20,7 +20,8 @@ from functions.cross_validate import cross_validate_StratifiedKFold
 from functions.threshold_analysis import threshold_optimization
 from functions.single_model import SingleModelOrchestrator
 
-
+import warnings
+warnings.filterwarnings("ignore")
 
 def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
     
@@ -107,6 +108,9 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
         'model_type':'single_model',
         'timestamp': datetime.now().isoformat()        
     }]       
+    print("\n")
+    print(model_info)
+    print("\n")
     
     path_model_info = os.path.join(
         config['init_path'],
@@ -132,8 +136,9 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
         model_config,
         scoring=scoring
         )
-    
+    print("\n")
     print(df_cv)
+    print("\n")
     print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
     print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
     
@@ -159,6 +164,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
         y_train
         )
     
+    print('\n')
     print('train metrics')
     # print(f"report: {metrics_train['classification_report']}")
     print(f"acurácia: {metrics_train['accuracy_score']}")   
@@ -251,6 +257,6 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
 if __name__ == "__main__":
     main_single_model_lite(
         pipeline_name="Pipeline3", 
-        model_name="KNeighborsClassifier",
-        scoring="roc_auc"
+        model_name="MLPClassifier",
+        scoring="accuracy"
         )

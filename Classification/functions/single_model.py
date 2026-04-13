@@ -112,13 +112,39 @@ def apply_random_forest():
 def apply_mlp():
     """Apply MLP Classifier model configuration."""
     return dict(
-        model=MLPClassifier(random_state=23),
+        param_grid = {
+            "hidden_layer_sizes":[10, 30, 50],
+            "activation": ['relu', 'tanh'],
+            "learning_rate_init": [0.01, 0.001],
+            'alpha': [0.001, 0.0001]            
+        },
+        param_distributions = {
+            "hidden_layer_sizes": [(10,), (20,), (50,),
+        (10, 5), (20, 10)],
+            "activation": ['relu', 'tanh'],
+            "learning_rate_init": loguniform(1e-4, 1e-1),
+            "alpha": loguniform(1e-4, 1e-1)           
+        },
+        model=MLPClassifier(
+            random_state=23, 
+            max_iter=1000, 
+            early_stopping=True),
         model_name='MLPClassifier'
     )
 
 def apply_adaboost():
     """Apply AdaBoost model configuration."""
-    return dict(       
+    return dict(
+        param_grid={
+            "n_estimators": [50, 100, 200, 300],
+            "learning_rate": [0.01, 0.1, 1],
+            "algorithm": ["SAMME", "SAMME.R"]
+        },
+        param_distributions={
+            "n_estimators": randint(50, 500),
+            "learning_rate": loguniform(1e-3, 1),
+            "algorithm": ["SAMME", "SAMME.R"]
+        },       
         model=AdaBoostClassifier(random_state=23),
         model_name='AdaBoostClassifier'
     )

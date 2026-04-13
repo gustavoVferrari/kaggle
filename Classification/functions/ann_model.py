@@ -7,7 +7,7 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
     def __init__(
         self,
         input_dim,
-        hidden_units=(32, 16),
+        hidden_units=(32, 16, 16),
         dropout_rate=0.2,
         learning_rate=0.001,
         epochs=30,
