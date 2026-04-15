@@ -4,22 +4,23 @@ import yaml
 import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, "../../"))
+project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 from functions.feature_selection import FeatureSelectionOrchestrator
-from Titanic.src.features.feature_eng import PreprocessingOrchestrator
+from Classification.Titanic.src.features.feature_eng import PreprocessingOrchestrator
 from utils.plots import Pearson_correlation, Bar_plot
 
 def Main_Feature_Selection():
     
         # 1. Carregar configurações
-    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
         
-    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)  
-        
+    
+    # 1. load dataset    
     X_train = pd.read_parquet(
         os.path.join(
             config['init_path'],
@@ -28,6 +29,7 @@ def Main_Feature_Selection():
     )
     y_train = X_train[['Survived']]
     
+    # 2. feat eng
     preprocessor = PreprocessingOrchestrator(
         numerical_con=config_pipe['features']['num_con'], 
         numerical_dis=config_pipe['features']['num_dis'], 
@@ -36,7 +38,7 @@ def Main_Feature_Selection():
     pipe = preprocessor.apply("preprocessing")        
     X_train_trans = pipe.fit_transform(X_train)    
     
-        
+    # 3. feat selection    
     feature_selection = FeatureSelectionOrchestrator()
 
     QuiSquare = feature_selection.apply(

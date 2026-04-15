@@ -1,7 +1,5 @@
 import json
 
-import json
-
 def to_jsonl(data, file_path=None, ensure_ascii=False, mode="write"):
     """
     Converte dict, list ou pandas.DataFrame para JSONL.

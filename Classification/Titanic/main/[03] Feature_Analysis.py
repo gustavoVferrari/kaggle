@@ -1,10 +1,12 @@
 import os
 import sys
-
+import yaml
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, "../../"))
+project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
-print(project_root)
+
+with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
+        config = yaml.safe_load(f)
 
 from functions.feature_analysis import (
     MissingData, 
@@ -15,21 +17,18 @@ from functions.feature_analysis import (
 if __name__ == "__main__":
 
     dataset_path = os.path.join(
-        project_root, 
-        "Titanic",
+        config['init_path'], 
         "data", 
         "processed", 
         "train_features.parquet"
         )
     plot_path = os.path.join(
-        project_root, 
-        "Titanic",
+        config['init_path'], 
         "reports", 
         "plots"
         )
     report_path = os.path.join(
-        project_root, 
-        "Titanic",
+        config['init_path'], 
         "reports", 
         "jsonl"
         )    

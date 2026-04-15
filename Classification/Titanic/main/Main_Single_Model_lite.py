@@ -25,7 +25,7 @@ warnings.filterwarnings("ignore")
 
 def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
     
-    # 1. Carregar configurações
+    # Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
     

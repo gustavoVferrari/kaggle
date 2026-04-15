@@ -6,7 +6,17 @@ import os
 
 
 def plot_categorical_data(df:pd.DataFrame, target, classification = True):
-    
+    """Plot categorical feature distributions and, optionally, target splits.
+
+    Args:
+        df (pd.DataFrame): Input dataset.
+        target: Target column name used when `classification` is True.
+        classification (bool, optional): If True, also plot target-conditioned
+            distributions and normalized category frequencies. Defaults to True.
+
+    Returns:
+        None
+    """
     categorical_col = df.select_dtypes(include=['category','object', 'bool']).columns    
     
     for col in categorical_col:
@@ -42,7 +52,17 @@ def plot_categorical_data(df:pd.DataFrame, target, classification = True):
 
 
 def plot_numerical_data(df:pd.DataFrame, target, classification = True):
-    
+    """Plot numerical feature distributions and a correlation heatmap.
+
+    Args:
+        df (pd.DataFrame): Input dataset.
+        target: Target column name used when `classification` is True.
+        classification (bool, optional): If True, also plot KDE curves split by
+            target. Defaults to True.
+
+    Returns:
+        None
+    """
     numerical_col = df.select_dtypes(include=['number']).columns    
     
     for col in numerical_col:
@@ -82,6 +102,17 @@ def plot_numerical_data(df:pd.DataFrame, target, classification = True):
     
 
 def Pearson_correlation(corr_matrix, title, path=None):    
+    """Plot and optionally save a correlation heatmap.
+
+    Args:
+        corr_matrix: Correlation matrix to visualize.
+        title: Plot title and output filename stem when saving.
+        path (str, optional): Directory where the figure will be saved. If
+            omitted, the plot is only displayed. Defaults to None.
+
+    Returns:
+        None
+    """
 
     mask = np.triu(np.ones_like(corr_matrix, dtype=np.bool_))
     mask = mask[1:, :-1]
@@ -108,7 +139,18 @@ def Pearson_correlation(corr_matrix, title, path=None):
         plt.close()  
     
 def Bar_plot(s:pd.Series, title, path=None):    
-    
+    """Plot a bar chart for a pandas Series and optionally save it.
+
+    Args:
+        s (pd.Series): Series whose index is used for the x-axis and whose
+            values are plotted on the y-axis.
+        title: Plot title and output filename stem when saving.
+        path (str, optional): Directory where the figure will be saved. If
+            omitted, the plot is only displayed. Defaults to None.
+
+    Returns:
+        None
+    """
     plt.figure(figsize=(20, 10))
     plt.bar(s.index, s.values, color="skyblue")
     plt.xticks(rotation=90)
@@ -135,7 +177,22 @@ def cross_validation_plot(
     X:str='val_score', 
     y:str='fold'
     ):
-    
+    """Plot validation scores per fold and save the figure.
+
+    Args:
+        save_path: Full path where the figure will be saved.
+        model_name: Model name used in the plot title.
+        df (pd.DataFrame): DataFrame containing fold-level validation scores.
+        X (str, optional): Column name for validation scores. Present for API
+            compatibility, but the current implementation uses ``val_score``
+            directly. Defaults to 'val_score'.
+        y (str, optional): Column name for fold labels. Present for API
+            compatibility, but the current implementation uses ``fold``
+            directly. Defaults to 'fold'.
+
+    Returns:
+        None
+    """
     sns.pointplot(
         data=df, 
         y='val_score', 
@@ -150,7 +207,17 @@ def separation_plan_plot(
     model_name:str,
     df:pd.DataFrame,     
     target:str):
+    """Plot the separation of predicted probabilities by target class.
 
+    Args:
+        save_path: Full path where the figure will be saved.
+        model_name (str): Model name used in the plot title.
+        df (pd.DataFrame): DataFrame containing a ``probability`` column.
+        target (str): Target column name used for the hue grouping.
+
+    Returns:
+        None
+    """
     sns.histplot(data=df, x='probability', hue=target)
     plt.title(f'separation plan {model_name}')
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
