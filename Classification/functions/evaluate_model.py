@@ -123,7 +123,7 @@ class MetricsOrchestrator:
             json.dump(metric_data, f, ensure_ascii=False)
             f.write('\n')
         
-        print(f"Métrica '{metric_name}' salva em: {jsonl_file}")
+        # print(f"Métrica '{metric_name}' salva em: {jsonl_file}")
         
         return metric_data
     

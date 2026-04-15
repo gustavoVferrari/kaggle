@@ -4,10 +4,25 @@ from sklearn.ensemble import VotingClassifier
 
 
 
-def train_model(X_train, y_train, clf_model, best_model_params):    
-    
-    # config
-    seed_ = 23        
+def train_model(X_train, y_train, clf_model, best_model_params):       
+    """Train a single estimator with tuned hyperparameters.
+
+    Parameters
+    ----------
+    X_train : array-like or DataFrame
+        Feature matrix used for fitting.
+    y_train : array-like or Series
+        Target labels aligned with `X_train`.
+    clf_model : sklearn estimator
+        Model instance to be fitted.
+    best_model_params : dict
+        Hyperparameters selected for `clf_model`.
+
+    Returns
+    -------
+    sklearn.pipeline.Pipeline
+        Fitted pipeline wrapping the configured estimator.
+    """
 
     # apply best params    
     clf_model.set_params(**best_model_params)      
@@ -20,7 +35,25 @@ def train_model(X_train, y_train, clf_model, best_model_params):
     return clf
 
 def train_voting_model(X_train, y_train, models, best_models_params):    
-    
+    """Train a soft-voting ensemble of tuned base estimators.
+
+    Parameters
+    ----------
+    X_train : array-like or DataFrame
+        Feature matrix used for fitting.
+    y_train : array-like or Series
+        Target labels aligned with `X_train`.
+    models : dict[str, sklearn estimator]
+        Pre-instantiated base estimators keyed by short name.
+    best_models_params : dict[str, dict]
+        Hyperparameters per estimator, keyed to match `models`.
+
+    Returns
+    -------
+    sklearn.pipeline.Pipeline
+        Fitted pipeline containing the soft-voting classifier.
+    """
+
     seed_ = 23       
    
     voting = VotingClassifier(
@@ -46,16 +79,30 @@ def train_voting_model(X_train, y_train, models, best_models_params):
     
     
 def save_model(model, path):
-        
-    """Salva o modelo treinado em um arquivo."""
-        
+    """Persist a trained model to disk using pickle.
+
+    Parameters
+    ----------
+    model : sklearn estimator or compatible object
+        Trained model to serialize.
+    path : str or PathLike
+        Destination filepath for the pickle file.
+    """
+
     with open(path, 'wb') as arquivo:
         pickle.dump(model, arquivo)
         
 def save_pipeline(pipeline, path):
-        
-    """Salva o pipeline em um arquivo."""
-        
+    """Persist a fitted pipeline to disk using pickle.
+
+    Parameters
+    ----------
+    pipeline : sklearn.pipeline.Pipeline
+        Fitted pipeline to serialize.
+    path : str or PathLike
+        Destination filepath for the pickle file.
+    """
+
     with open(path, 'wb') as arquivo:
         pickle.dump(pipeline, arquivo)
     

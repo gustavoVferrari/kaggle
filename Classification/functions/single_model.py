@@ -4,182 +4,171 @@ from sklearn.ensemble import (
     RandomForestClassifier, 
     AdaBoostClassifier, 
     GradientBoostingClassifier, 
-    HistGradientBoostingClassifier)
+    )
 from xgboost import XGBClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from lightgbm import LGBMClassifier
+from scipy.stats import randint, uniform, loguniform
 
-def apply_lightGBM_classifier(seed_):
+def apply_lightGBM_classifier():
     """Apply LGBMClassifiermodel configuration."""
-    return dict(
-        models_gs={
-            "lgb": [
-                LGBMClassifier(),
-                 {
-                     'lgbmclassifier__n_estimators':[150, 200, 250, 300, 500],
-                     'lgbmclassifier__learning_rate': [0.01, 0.05, 0.1, 0.2], 
-                     'lgbmclassifier__max_depth': [3, 5, 7]
-                     }
-            ]
-        },
+    return dict(              
         model=LGBMClassifier(),
-        model_name='lgb'
+        model_name='LGBMClassifier'
     )
 
-def apply_XGB_classifier(seed_):
+def apply_XGB_classifier():
     """Apply XGBClassifier model configuration."""
-    return dict(
-        models_gs={
-            "xgb": [
-                XGBClassifier(random_state=seed_),
-                 {
-                     'xgbclassifier__n_estimators':[100, 150, 200, 250, 500],
-                     'xgbclassifier__learning_rate': [0.01, 0.1, 0.2], 
-                     'xgbclassifier__max_depth': [3, 5, 7],
-                     'xgbclassifier__subsample':[0.6, 0.8, 1.0]
-                     }
-            ]
-        },
-        model=XGBClassifier(random_state=seed_),
-        model_name='xgb'
+    return dict(       
+        model=XGBClassifier(random_state=23),
+        model_name='XGBClassifier'
     )
 
-def apply_svm_classifier(seed_):
+def apply_svm_classifier():
     """Apply SVM model configuration."""
+    
     return dict(
-        models_gs={
-            "svc_clf": [
-                SVC(probability=True, random_state=seed_),
-                 {
-                     'svc__kernel':['poly', 'rbf'],
-                     'svc__C': [0.1, 1, 10]
-                     }
-            ]
-        },
-        model=SVC(probability=True, random_state=seed_),
-        model_name='svc'
-    )
+        param_grid = [
+            {"kernel": ["linear"],
+            "C": [0.1, 1, 10, 100]}
+            ,
+            {"kernel": ["rbf"],
+            "C": [0.1, 1, 10, 100],
+            "gamma": ["scale", "auto", 0.01, 0.1]}              
+        ], 
+        param_distributions =  [
+            {"kernel": ["linear"],
+             "C": loguniform(1e-3, 1e3)},
+            {"kernel": ["rbf"],
+             "C": loguniform(1e-3, 1e3),
+             "gamma": loguniform(1e-4, 1)}
+            ],     
+        model=SVC(probability=True, random_state=23),
+        model_name='SVC')
 
-
-def apply_knn_classifier(seed_=None):
+def apply_knn_classifier():
     """Apply knn model configuration."""
     return dict(
-        models_gs={
-            "knn_clf": [
-                KNeighborsClassifier(),
-                {
-                    'kneighborsclassifier__n_neighbors':[3,5,7,9,11,13],
-                    'kneighborsclassifier__weights': ['uniform', 'distance'], 
-                    'kneighborsclassifier__metric': ['manhattan', 'cosine', 'haversine', 'minkowski']
-                    }
-            ]
-        },
+        param_grid = {
+            "n_neighbors":[3,5,7,9,11,13],
+            "weights":['uniform', 'distance'], 
+            "metric": ['manhattan', 'cosine', 'minkowski']           
+            },
+        param_distributions = {
+            "n_neighbors": randint(3, 20),
+            "weights": ["uniform", "distance"],
+            "metric": ["euclidean", "manhattan"]
+            },        
         model=KNeighborsClassifier(),
-        model_name='knn'
-    )
+        model_name='KNeighborsClassifier'
+    ) 
  
- 
-def apply_logistic_regression(seed_):
+def apply_logistic_regression():
     """Apply Logistic Regression model configuration."""
+    
     return dict(
-        models_gs={
-            "logistic_reg": [
-                LogisticRegression(max_iter=1000, penalty="l2"),
-                {
-                    "logisticregression__solver": ["saga", "lbfgs", "liblinear"],
-                    "logisticregression__C": [0.1, 1, 100],
-                }
-            ]
-        },
-        model=LogisticRegression(random_state=seed_),
-        model_name='lr'
+        param_grid = {
+            "penalty":['l2'],
+            "C":[10, 1, 0.1], 
+            "max_iter":[200, 300, 1000], 
+            "solver":['liblinear', 'saga', 'lbfgs']    
+            }, 
+        param_distributions = {
+            "penalty":['l2'],
+            "max_iter":randint(100, 1500),
+            "C":loguniform(1e-3, 1e2),
+            "solver":['liblinear', 'saga', 'lbfgs'] 
+        },      
+        model=LogisticRegression(random_state=23),
+        model_name='LogisticRegression'
     )
 
-def apply_random_forest(seed_):
+def apply_random_forest():
     """Apply Random Forest model configuration."""
+    
     return dict(
-        models_gs={
-            "random_forest": [
-                RandomForestClassifier(random_state=seed_),
-                {
-                    'randomforestclassifier__n_estimators': [150, 200, 300, 400, 500],
-                    'randomforestclassifier__criterion': ['gini', 'entropy', 'log_loss'], 
-                    'randomforestclassifier__max_depth': [None, 4, 5, 7, 10],
-                    'randomforestclassifier__min_samples_split': [2, 5, 9],
-                    'randomforestclassifier__min_samples_leaf': [1, 2, 4],
-
-                }
-            ]
-        },
-        model=RandomForestClassifier(random_state=seed_),
-        model_name='rf'
+        param_grid = {
+            "n_estimators": [200, 300, 500],
+            "max_depth": [5, 7, 10],
+            "min_samples_split": [4, 5, 10],
+            "min_samples_leaf": [2, 4],
+            "max_features": ["sqrt", "log2", None],
+            "bootstrap": [True, False]
+        }, 
+        param_distributions = {
+            "n_estimators": randint(100, 600),
+            "max_depth": randint(3, 10),
+            "min_samples_split": randint(2, 10),
+            "min_samples_leaf": randint(1, 10),
+            "max_features": ["sqrt", "log2", None],
+            "bootstrap": [True, False]
+        },          
+        model=RandomForestClassifier(random_state=23),
+        model_name='RandomForestClassifier'
     )
 
-def apply_mlp(seed_):
+def apply_mlp():
     """Apply MLP Classifier model configuration."""
     return dict(
-        models_gs={
-            "ml": [
-                MLPClassifier(random_state=seed_),        
-                {
-                    'mlpclassifier__hidden_layer_sizes': [10, 20, 30],
-                    'mlpclassifier__activation': ['relu', 'tanh'],
-                    'mlpclassifier__learning_rate_init': [0.01, 0.001]
-                }
-            ]
+        param_grid = {
+            "hidden_layer_sizes":[10, 30, 50],
+            "activation": ['relu', 'tanh'],
+            "learning_rate_init": [0.01, 0.001],
+            'alpha': [0.001, 0.0001]            
         },
-        model=MLPClassifier(random_state=seed_),
-        model_name='MLP_clf'
+        param_distributions = {
+            "hidden_layer_sizes": [(10,), (20,), (50,),
+        (10, 5), (20, 10)],
+            "activation": ['relu', 'tanh'],
+            "learning_rate_init": loguniform(1e-4, 1e-1),
+            "alpha": loguniform(1e-4, 1e-1)           
+        },
+        model=MLPClassifier(
+            random_state=23, 
+            max_iter=1000, 
+            early_stopping=True),
+        model_name='MLPClassifier'
     )
 
-def apply_adaboost(seed_):
+def apply_adaboost():
     """Apply AdaBoost model configuration."""
     return dict(
-        models_gs={
-            "ab": [
-                AdaBoostClassifier(random_state=seed_),        
-                {
-                    'adaboostclassifier__n_estimators': [150, 200, 250, 300],
-                    'adaboostclassifier__learning_rate': [0.01, 0.1, 0.001]
-                }
-            ]
+        param_grid={
+            "n_estimators": [50, 100, 200, 300],
+            "learning_rate": [0.01, 0.1, 1],
+            "algorithm": ["SAMME", "SAMME.R"]
         },
-        model=AdaBoostClassifier(random_state=seed_),
-        model_name='adaboost'
+        param_distributions={
+            "n_estimators": randint(50, 500),
+            "learning_rate": loguniform(1e-3, 1),
+            "algorithm": ["SAMME", "SAMME.R"]
+        },       
+        model=AdaBoostClassifier(random_state=23),
+        model_name='AdaBoostClassifier'
     )
 
-
-def apply_gradboost(seed_):
+def apply_gradboost():
     """Apply AdaBoost model configuration."""
-    return dict(
-        models_gs={
-            "ab": [
-                GradientBoostingClassifier(random_state=seed_),        
-                {
-                    'gradientboostingclassifier__n_estimators':[100, 150, 200, 250],
-                    'gradientboostingclassifier__learning_rate': [0.01, 0.1, 0.001]
-                }
-            ]
-        },
-        model=AdaBoostClassifier(random_state=seed_),
-        model_name='gradboost'
+    return dict(        
+        model=GradientBoostingClassifier(random_state=23),
+        model_name='GradientBoostingClassifier'
     )
 
-class ModelOrchestrator:
-    def __init__(self, seed_=42):
-        self.seed_ = seed_
+class SingleModelOrchestrator:
+    def __init__(self):
+                
         self.methods = {
             "LogisticRegression": apply_logistic_regression,
-            "KnnClassifier": apply_knn_classifier,
-            "SvmClassifier": apply_svm_classifier,
-            "RandomForest": apply_random_forest,
-            "MLP": apply_mlp,
-            "AdaBoost": apply_adaboost,
-            "GradBoost":apply_gradboost,
-            "XGradBoost":apply_XGB_classifier,
-            "LGBM":apply_lightGBM_classifier
+            "KNeighborsClassifier": apply_knn_classifier,
+            "SVC": apply_svm_classifier,
+            "RandomForestClassifier": apply_random_forest,
+            "MLPClassifier": apply_mlp,
+            "AdaBoostClassifier": apply_adaboost,
+            "GradientBoostingClassifier":apply_gradboost,
+            "XGBClassifier":apply_XGB_classifier,
+            "LGBMClassifier":apply_lightGBM_classifier
         }
         
         self.model_methods = list(self.methods.keys())
@@ -200,4 +189,8 @@ class ModelOrchestrator:
         
         # Obtém a função correspondente e a executa
         model_func = self.methods[method_name]
-        return model_func(self.seed_)
+        return model_func()
+    
+    
+if __name__ == "__main__":
+    print("Single model loaded")

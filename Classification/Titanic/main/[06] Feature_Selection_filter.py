@@ -50,7 +50,7 @@ def Main_Feature_Selection(pipeline_name: str):
         
     path_ =  os.path.join(
         config['init_path'],
-        config['reports']['figures'])
+        config['reports']['plots'])
     
     Pearson_correlation(corr, title = f"corr_{pipeline_name}", path=path_) 
     

@@ -2,25 +2,23 @@ import yaml
 import pandas as pd
 import os
 import sys
-from sklearn.pipeline import Pipeline
-
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
 from utils.utils import to_jsonl
-from functions.make_dataset import split_data, save_data
-from src.features.feature_eng import PreprocessingOrchestrator
-from functions.single_model import ModelOrchestrator
+from functions.make_dataset import save_data
+from Classification.functions.multi_model_gs import ModelOrchestrator
 from functions.model_selection import grid_search
-from functions.train_model import train_model, save_model, save_pipeline
+from functions.train_model import train_model, save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate
 
-def main_single_model():
+
+def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampling_method:str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
@@ -34,45 +32,36 @@ def main_single_model():
     with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
-    print("Iniciando pipeline de Machine Learning...")
+    print("Iniciando modelo de Machine Learning...")
     
-    # 1. Carregar dados processados
-    df = pd.read_parquet(
-        os.path.join(
-            config['init_path'],
-            config['data']['processed'],
-            "train_features.parquet"
-            )       
-        )
+    X_train = pd.read_parquet(
+       os.path.join(
+           config['init_path'],
+           config['data']['feature_eng'],
+            f"X_train_feat_eng_{pipeline_name}.parquet")
+   )
+   
+    y_train = pd.read_parquet(
+       os.path.join(
+           config['init_path'],
+           config['data']['feature_eng'],
+            f"y_train_feat_eng_{pipeline_name}.parquet")
+   )
     
-    X_test = pd.read_parquet(
-        os.path.join(
-            config['init_path'],
-            config['data']['processed'],
-            "test_features.parquet"
-            )       
-        )
+    X_val = pd.read_parquet(
+       os.path.join(
+           config['init_path'],
+           config['data']['feature_eng'],
+            f"X_val_feat_eng_{pipeline_name}.parquet")
+   )
     
-    # 2. Processamento de dados    
-    X_train, X_val, y_train, y_val = split_data(
-        df, 
-        target_column=config_pipe['features']['target'][0]
-        )
-
-    # 3. Feature Engineering        
-    preprocessor = PreprocessingOrchestrator(
-        numerical_con=config_pipe['features']['num_con'], 
-        numerical_dis=config_pipe['features']['num_dis'], 
-        categorical_var=config_pipe['features']['cat_var'])
+    y_val = pd.read_parquet(
+       os.path.join(
+           config['init_path'],
+           config['data']['feature_eng'],
+            f"y_val_feat_eng_{pipeline_name}.parquet")
+   )
     
-    # define pipiline
-    pipeline_name = "Pipeline1"
-    pipe = preprocessor.apply(pipeline_name)
-    
-    X_train = pipe.fit_transform(X_train)
-    X_val = pipe.transform(X_val)    
-    X_test = pipe.transform(X_test)
-        
     # Drop columns
     X_train.drop(
         columns=config_model['single_model']['cols_2_drop'],
@@ -82,25 +71,17 @@ def main_single_model():
         columns=config_model['single_model']['cols_2_drop'],
         inplace=True)   
 
-    # Apply UnderSamplig    
+    # Apply UnderSamplig        
     undersamplig_orchestrator = UnderSampligOrchestrator()    
     X_resampled, y_resampled = undersamplig_orchestrator.apply(
-        "NearMissV3", 
+        undersampling_method, 
         X_train, 
-        y_train)
-    
-    # Sava datasets
-    path_data = os.path.join(
-        config['init_path'],
-        config['data']['feature_eng'])
-    
-    save_data(path_data, f"X_test_feat_eng_{pipeline_name}", X_test)
-    save_data(path_data, f"X_val_feat_eng_{pipeline_name}", X_val)
-    save_data(path_data, f"X_train_feat_eng_{pipeline_name}", X_train)
+        y_train
+        )
     
     # 3. Model Selection 
     model_orchestrator = ModelOrchestrator(seed_=23)    
-    model_config = model_orchestrator.apply("LogisticRegression")    
+    model_config = model_orchestrator.apply(model_name)    
          
     best_paramns = grid_search(X_resampled, y_resampled, model_config['models_gs'], 'roc_auc', cv=5) 
     
@@ -119,13 +100,23 @@ def main_single_model():
     to_jsonl(df_cv, path_cv, mode='append')
     
     # 5. Evaulate model
-    metrics = evaluate_model(clf, X_val, y_val)
+    metrics_train = evaluate_model(clf, X_train, y_train)
     
-    print(f'report: {metrics['classification_report']}')
+    print('train metrics')
+    print(f"report: {metrics_train['classification_report']}")
+    print(f"acurácia: {metrics_train['accuracy_score']}")   
+    print(f"f1: {metrics_train['f1_score']}")
+    print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
-    print(f'acurácia: {metrics['accuracy_score']}')   
-    print(f'f1: {metrics['f1_score']}')
-    print(f'roc_auc: {metrics['roc_auc_score']}')
+    
+    metrics_val = evaluate_model(clf, X_val, y_val)
+    
+    print('Validation metrics')
+    print(f"report: {metrics_val['classification_report']}")
+    print(f"acurácia: {metrics_val['accuracy_score']}")   
+    print(f"f1: {metrics_val['f1_score']}")
+    print(f"roc_auc: {metrics_val['roc_auc_score']}")
+    print('\n')
     
     file_path = os.path.join(
         config['init_path'],
@@ -133,13 +124,23 @@ def main_single_model():
     
     # Save Metrics
     metric_orch = MetricsOrchestrator(output_dir=file_path)    
-    metric_orch.save_all_metrics(metrics, model_config['model_name'])    
+    metric_orch.save_all_metrics(
+        metrics_train, 
+        model_config['model_name'], 
+        dataset='train', 
+        undersampling=undersampling_method) 
+    
+    metric_orch.save_all_metrics(
+        metrics_val, 
+        model_config['model_name'], 
+        dataset='validation', 
+        undersampling=undersampling_method)      
     
     # 6. Save Model    
     path_model = os.path.join(
         config['init_path'],
         config['single_model']['pkl'],
-        f'{model_config['model_name']}.pkl')
+        f"{model_config['model_name']}_{pipeline_name}.pkl")
     
     save_model(clf, path_model)
     
@@ -157,4 +158,8 @@ def main_single_model():
     
    
 if __name__ == "__main__":
-    main_single_model()
+    main_single_model_undersamplig(
+        pipeline_name="Pipeline3", 
+        model_name="RandomForest",
+        undersampling_method="TomekLinks"
+        )

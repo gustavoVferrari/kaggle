@@ -78,5 +78,5 @@ def main_feature_eng(pipeline_name: str):
    
 if __name__ == "__main__":
     main_feature_eng(pipeline_name = "Pipeline3")
-    # main_feature_eng(pipeline_name = "Pipeline2")
-    # main_feature_eng(pipeline_name = "Pipeline1")
+    main_feature_eng(pipeline_name = "Pipeline2")
+    main_feature_eng(pipeline_name = "Pipeline1")

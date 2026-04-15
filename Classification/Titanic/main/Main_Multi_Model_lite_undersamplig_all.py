@@ -7,7 +7,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, project_root)
 
-from functions.single_model import ModelOrchestrator
+from Classification.functions.multi_model_gs import ModelOrchestrator
 from functions.model_selection import grid_search
 from functions.train_model import train_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator

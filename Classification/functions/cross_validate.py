@@ -9,10 +9,10 @@ downstream analysis but only accuracy is persisted.
 import pandas as pd
 from sklearn.pipeline import make_pipeline
 from datetime import datetime
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, KFold, cross_validate
 
 
-def cross_validate(
+def cross_validate_stratified_gs(
     X_train: pd.DataFrame,
     y_train: pd.DataFrame,
     model_config,
@@ -81,8 +81,109 @@ def cross_validate(
     df_score['model'] = model_config['model_name']
     df_score['timestamp'] = datetime.now().isoformat()
     
+    
+    df_score = (df_score.assign(
+        scoring='accuracy',
+        model_type = "multi_model",
+        model = lambda x: model_config['model_name'], 
+        timestamp = lambda x: datetime.now().isoformat())
+                )
+    
     return df_score
 
+
+def cross_validate_kfold(
+    X_train: pd.DataFrame,
+    y_train: pd.DataFrame,
+    model,
+    scoring:str='accuracy',
+    n_splits:int=5, 
+    shuffle:bool=True):
+    """Run basic K-Fold CV and return per-fold train/test scores.
+
+    Args:
+        X_train (pd.DataFrame): Feature matrix used in cross-validation.
+        y_train (pd.DataFrame): Target labels aligned with `X_train` rows.
+        model: Sklearn-compatible estimator exposing `fit` and `score`.
+        scoring (str, optional): Scoring metric name understood by
+            `sklearn.model_selection.cross_validate`. Defaults to ``'accuracy'``.
+        n_splits (int, optional): Number of folds. Defaults to 5.
+        shuffle (bool, optional): Whether to shuffle before splitting. Defaults to True.
+
+    Returns:
+        dict: Keys ``train_score`` and ``test_score`` containing arrays of per-fold
+            scores produced by ``cross_validate``.
+    """
+    
+    # kfolds cv
+    kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=23)
+    
+    # search
+    clf = cross_validate(
+        estimator=model,
+        X=X_train,
+        y=y_train,
+        scoring=scoring,
+        return_train_score=True,
+        cv=kf
+    )
+    
+    return {'train_score':clf['train_score'], 'test_score':clf['test_score']}
+
+def cross_validate_StratifiedKFold(
+    X_train: pd.DataFrame,
+    y_train: pd.DataFrame,
+    model_clf,
+    model_config:dict,
+    scoring:str='accuracy',
+    n_splits:int=5, 
+    shuffle:bool=True):
+    """Run basic StratifiedKFold CV and return per-fold train/test scores.
+
+    Args:
+        X_train (pd.DataFrame): Feature matrix used in cross-validation.
+        y_train (pd.DataFrame): Target labels aligned with `X_train` rows.
+        model: Sklearn-compatible estimator exposing `fit` and `score`.
+        scoring (str, optional): Scoring metric name understood by
+            `sklearn.model_selection.cross_validate`. Defaults to ``'accuracy'``.
+        n_splits (int, optional): Number of folds. Defaults to 5.
+        shuffle (bool, optional): Whether to shuffle before splitting. Defaults to True.
+
+    Returns:
+        dict: Keys ``train_score`` and ``test_score`` containing arrays of per-fold
+            scores produced by ``cross_validate``.
+    """
+    
+    # kfolds cv
+    kf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=23)    
+        
+    # search
+    clf = cross_validate(
+        estimator=model_clf,
+        X=X_train,
+        y=y_train,
+        scoring=scoring,
+        return_train_score=True,
+        cv=kf
+    )
+    
+    cv_result = {'train_score':clf['train_score'], 'test_score':clf['test_score']}
+    
+    df_score = (pd.DataFrame
+                .from_dict(cv_result, orient='columns')
+                .reset_index()
+                .rename(columns={'index':'fold'})
+                .rename(columns={'test_score':'val_score'})
+                )
+    
+    df_score = (df_score.assign(
+        scoring=scoring,
+        model_type = "single_model",
+        model = lambda x: model_config['model_name'], 
+        timestamp = lambda x: datetime.now().isoformat())
+                )
+    
+    return df_score
 
 if __name__ == "__main__":
    print("cross validate carregado.")

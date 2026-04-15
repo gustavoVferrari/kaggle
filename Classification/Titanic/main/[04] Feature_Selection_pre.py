@@ -61,7 +61,7 @@ def Main_Feature_Selection():
         
     path_ =  os.path.join(
         config['init_path'],
-        config['reports']['figures'])
+        config['reports']['plots'])
     
     Pearson_correlation(corr, title = "corr", path=path_)
     
