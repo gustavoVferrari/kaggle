@@ -6,7 +6,7 @@ import sys
 import pickle
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, "../../"))
+project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 
@@ -14,15 +14,15 @@ sys.path.insert(0, project_root)
 def main_submission(threshold: float, pipeline_name: str, model_name: str):
     
     # 1. Carregar configurações
-    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
     
     # pipeline selection    
-    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
     
     # model selection    
-    with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
     
@@ -70,4 +70,8 @@ def main_submission(threshold: float, pipeline_name: str, model_name: str):
     print("dados salvos com sucesso")
     
 if __name__ == "__main__":
-    main_submission(threshold=0.5, pipeline_name="Pipeline3", model_name="rf")
+    main_submission(
+        threshold=0.5, 
+        pipeline_name="Pipeline3",
+        model_name="RandomForestClassifier"
+        )

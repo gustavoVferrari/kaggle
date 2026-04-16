@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, "../../"))
+project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 from utils.utils import to_jsonl
@@ -23,18 +23,18 @@ from functions.single_model import SingleModelOrchestrator
 import warnings
 warnings.filterwarnings("ignore")
 
-def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
+def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_search_method:str):
     
     # Carregar configurações
-    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
     
     # pipeline selection    
-    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
     
     # model selection    
-    with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
     print(f"Iniciando pipeline de Machine Learning {model_name}, scoring {scoring} with {pipeline_name}")
@@ -84,22 +84,25 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
     model_orchestrator = SingleModelOrchestrator()
     model_config = model_orchestrator.apply(model_name)  
     
-    # find best params     
-    # best_paramns = grid_search_single_model_StratifiedKFold(
-    #     X_train, 
-    #     y_train, 
-    #     model_config['model'], 
-    #     model_config['param_grid'], 
-    #     scoring=scoring
-    #     )     
-    
-    best_paramns = randomized_single_model_grid_search(
-        X_train, 
-        y_train, 
-        model_config['model'], 
-        model_config['param_distributions'], 
-        scoring=scoring
-        ) 
+    if grid_search_method == "grid_search":
+        # find best params     
+        best_paramns = grid_search_single_model_StratifiedKFold(
+            X_train, 
+            y_train, 
+            model_config['model'], 
+            model_config['param_grid'], 
+            scoring=scoring
+            )     
+    elif grid_search_method == "randomized_grid_search":
+        best_paramns = randomized_single_model_grid_search(
+            X_train, 
+            y_train, 
+            model_config['model'], 
+            model_config['param_distributions'], 
+            scoring=scoring
+            ) 
+    else:
+        raise KeyError('please select a grid_search method between:[ grid_search, randomized_grid_search]')
     
     # save model info
     model_info = [{
@@ -258,5 +261,6 @@ if __name__ == "__main__":
     main_single_model_lite(
         pipeline_name="Pipeline3", 
         model_name="MLPClassifier",
-        scoring="accuracy"
+        scoring="accuracy",
+        grid_search_method='randomized_grid_search'
         )

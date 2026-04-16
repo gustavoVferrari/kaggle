@@ -16,7 +16,7 @@ from sklearn.model_selection import GridSearchCV
 
 
 
-def voting_model(X_train:pd.DataFrame, y_train:pd.DataFrame, cv=3 ,metric="roc_auc"):           
+def voting_model(X_train:pd.DataFrame, y_train:pd.DataFrame, cv=3 ,scoring="roc_auc"):           
 
     seed_ = 23
     
@@ -80,7 +80,7 @@ def voting_model(X_train:pd.DataFrame, y_train:pd.DataFrame, cv=3 ,metric="roc_a
         
         grid = GridSearchCV(
             grid_pipeline,
-            scoring=metric,
+            scoring=scoring,
             param_grid=params, 
             cv=cv,
             n_jobs=-1)
