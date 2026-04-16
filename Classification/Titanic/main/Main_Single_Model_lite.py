@@ -108,6 +108,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
     model_info = [{
         'model':model_name,
         'best_paramns': best_paramns,
+        'undersamplig': None,
         'model_type':'single_model',
         'timestamp': datetime.now().isoformat()        
     }]       
@@ -151,7 +152,11 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
         config['single_model']['plots'],
         f"cross_validation_{model_name}.png")
     
-    cross_validation_plot(save_path, model_name, df_cv)
+    cross_validation_plot(
+        save_path,
+        model_name, 
+        df_cv
+        )
     
     path_cv = os.path.join(
         config['init_path'],

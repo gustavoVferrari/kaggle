@@ -2,7 +2,7 @@ import yaml
 import pandas as pd
 import os
 import sys
-
+from datetime import datetime
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
@@ -129,6 +129,27 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
     print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
     
+    # model info
+    model_info = [{
+        'model':model_name,
+        'best_paramns': best_paramns,
+        'undersamplig': undersampling_method,
+        'model_type':'single_model',
+        'timestamp': datetime.now().isoformat()        
+    }]       
+    print("\n")
+    print(model_info)
+    print("\n")
+    
+    path_model_info = os.path.join(
+        config['init_path'],
+        config['single_model']['tables'],
+        "model_info.jsonl")    
+    to_jsonl(
+        pd.DataFrame(model_info), 
+        path_model_info, 
+        mode='append')
+    
     # 7. Evaulate model
     metrics_train = evaluate_model(
         model_clf, 
@@ -214,5 +235,5 @@ if __name__ == "__main__":
         pipeline_name="Pipeline3", 
         model_name="RandomForestClassifier",
         undersampling_method="NeighbourhoodCleaningRule",
-        scoring='roc_auc'
+        scoring='accuracy'
         )
