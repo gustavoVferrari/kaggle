@@ -1,16 +1,16 @@
 from xml.parsers.expat import model
-
 import yaml
 import pandas as pd
 import os
 import sys
-
+from datetime import datetime
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 from functions.make_dataset import save_data
 from utils.plots import separation_plan_plot
+from utils.utils import to_jsonl
 from functions.train_model import save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
@@ -72,7 +72,29 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
 
 
     # 3. Model Selection 
-    model = KerasBinaryClassifier(input_dim=X_train.shape[1], epochs=40)    
+    model = KerasBinaryClassifier(input_dim=X_train.shape[1], epochs=50)    
+    
+      
+    model_info = [{
+        'model':model_name,
+        'best_paramns': model.get_params(),
+        'undersamplig': None,
+        'model_type':model_name,
+        'timestamp': datetime.now().isoformat()        
+    }]       
+ 
+    print(model.get_params(), end='\n')
+
+    
+    path_model_info = os.path.join(
+        config['init_path'],
+        config['ann_model']['tables'],
+        "model_info.jsonl")    
+    
+    to_jsonl(
+        pd.DataFrame(model_info), 
+        path_model_info, 
+        mode='append')
         
     # 4. train model
     clf = model.fit(X_train, y_train)             
@@ -137,6 +159,8 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
         df_separation_plan,
         config_pipe['features']['target'][0]
     )
+   
+   
    
 if __name__ == "__main__":
     main_ann_model_lite(pipeline_name='Pipeline3', model_name='ANN')

@@ -14,7 +14,25 @@ from scipy.stats import randint, uniform, loguniform
 
 def apply_lightGBM_classifier():
     """Apply LGBMClassifiermodel configuration."""
-    return dict(              
+    return dict(
+        param_grid={
+            "n_estimators": [50, 100, 200],
+            "learning_rate": [0.01, 0.05, 0.1],
+            "num_leaves": [15, 31, 63],
+            "max_depth": [-1, 5, 10, 20],
+            "min_child_samples": [10, 20, 30],
+            "subsample": [0.6, 0.8, 1.0],
+            "colsample_bytree": [0.6, 0.8, 1.0]
+        },
+        param_distributions={
+            "n_estimators": randint(50, 300),
+            "learning_rate": uniform(0.01, 0.2),
+            "num_leaves": randint(15, 100),
+            "max_depth": randint(-1, 30),
+            "min_child_samples": randint(5, 50),
+            "subsample": uniform(0.5, 0.5),
+            "colsample_bytree": uniform(0.5, 0.5)
+        },
         model=LGBMClassifier(),
         model_name='LGBMClassifier'
     )

@@ -214,7 +214,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
         config['init_path'],
         config['single_model']['pkl'],
         f"{model_config['model_name']}_{pipeline_name}.pkl")     
-    save_model(metrics_train, path_model)
+    save_model(model_clf, path_model)
     
     # 7. Make predict 
     predictions, probabilities = make_prediction(model_clf, X_val)
@@ -265,7 +265,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
 if __name__ == "__main__":
     main_single_model_lite(
         pipeline_name="Pipeline3", 
-        model_name="MLPClassifier",
+        model_name="LGBMClassifier",
         scoring="accuracy",
         grid_search_method='randomized_grid_search'
         )

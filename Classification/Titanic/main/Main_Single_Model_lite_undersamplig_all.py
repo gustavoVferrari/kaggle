@@ -150,6 +150,6 @@ def main_single_model_undersamplig(pipeline_name: str, model_name: str, scoring:
 if __name__ == "__main__":
     main_single_model_undersamplig(
         pipeline_name="Pipeline3",
-        model_name="RandomForestClassifier",
-        scoring='roc_auc'
+        model_name="LGBMClassifier",
+        scoring='accuracy'
         )

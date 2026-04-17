@@ -114,8 +114,6 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     
     cross_validation_plot(save_path, model_name, df_cv)
     
-    print('\n')
-    print(df_cv)
     path_cv = os.path.join(
         config['init_path'],
         config['single_model']['tables'],
@@ -124,8 +122,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     to_jsonl(df_cv, path_cv, mode='append')
     
     print("\n")
-    print(df_cv)
-    print("\n")
+    print(df_cv, end='\n')
     print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
     print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
     
@@ -233,7 +230,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
 if __name__ == "__main__":
     main_single_model_undersamplig(
         pipeline_name="Pipeline3", 
-        model_name="RandomForestClassifier",
-        undersampling_method="NeighbourhoodCleaningRule",
+        model_name="LGBMClassifier",
+        undersampling_method="TomekLinks",
         scoring='accuracy'
         )
