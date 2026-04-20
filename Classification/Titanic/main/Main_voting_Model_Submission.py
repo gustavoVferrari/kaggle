@@ -10,7 +10,6 @@ project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 
-
 def main_submission(threshold: float, pipeline_name: str, model_name: str):
     
     # 1. Carregar configurações
@@ -42,16 +41,16 @@ def main_submission(threshold: float, pipeline_name: str, model_name: str):
             f"test_features.parquet")
    )
 
-    y_test_id = y_test_id[['PassengerId']].copy()
+    y_test_id = y_test_id[['PassengerId']].copy()    
     
     X_test.drop(
-        columns = config_model['single_model']['cols_2_drop'][pipeline_name],
+        columns = config_model['voting_model']['cols_2_drop'][pipeline_name],
         inplace=True
     )   
     
     model_path = os.path.join(
            config['init_path'],
-           config['single_model']['pkl'],
+           config['voting_model']['pkl'],
             f"{model_name}_{pipeline_name}.pkl")
     # open model    
     with open(model_path, "rb") as file:
@@ -72,6 +71,6 @@ def main_submission(threshold: float, pipeline_name: str, model_name: str):
 if __name__ == "__main__":
     main_submission(
         threshold=0.5, 
-        pipeline_name="Pipeline2",
-        model_name="LGBMClassifier"
+        pipeline_name="Pipeline3",
+        model_name="voting_model"
         )

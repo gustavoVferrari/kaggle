@@ -137,6 +137,7 @@ def cross_validate_StratifiedKFold(
     model_config:dict,
     scoring:str='accuracy',
     n_splits:int=5, 
+    model_type:str='single_model',
     shuffle:bool=True):
     """Run basic StratifiedKFold CV and return per-fold train/test scores.
 
@@ -178,7 +179,7 @@ def cross_validate_StratifiedKFold(
     
     df_score = (df_score.assign(
         scoring=scoring,
-        model_type = "single_model",
+        model_type = model_type,
         model = lambda x: model_config['model_name'], 
         timestamp = lambda x: datetime.now().isoformat())
                 )

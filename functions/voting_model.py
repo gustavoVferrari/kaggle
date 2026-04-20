@@ -25,13 +25,14 @@ def voting_model(X_train:pd.DataFrame, y_train:pd.DataFrame, cv=3 ,scoring="roc_
         RandomForestClassifier(random_state=seed_),
         {'randomforestclassifier__n_estimators':[200, 250, 500],
          'randomforestclassifier__criterion': ['gini', 'entropy'], 
-         'randomforestclassifier__max_depth': [None, 5, 10, 20],
+         'randomforestclassifier__max_depth': [5, 10, 15],
          'randomforestclassifier__min_samples_split' :[2,4,6]}
         ]
     ,
     ab = [
         AdaBoostClassifier(random_state=seed_),
-        {'adaboostclassifier__n_estimators':[150, 200, 250, 300],
+        {'adaboostclassifier__n_estimators':[200, 250, 300],
+         'adaboostclassifier__algorithm': ["SAMME", "SAMME.R"],
          'adaboostclassifier__learning_rate': [0.01, 0.1, 0.001]}
         ]
     ,    
@@ -44,19 +45,21 @@ def voting_model(X_train:pd.DataFrame, y_train:pd.DataFrame, cv=3 ,scoring="roc_
     lr = [
         LogisticRegression(),
         {'logisticregression__solver':['saga', 'lbfgs', 'liblinear'],
+         'logisticregression__penalty':['l2'],
+         'logisticregression__max_iter':[200, 300, 1000],
          'logisticregression__C': [0.1, 1]}
         ],
     
     sv = [
         SVC(probability=True),
         {'svc__kernel':['rbf', 'poly'],
-         'svc__C': [0.1, 1]}
+         'svc__C': [0.1, 1, 10]}
         ],     
     ml = [
         MLPClassifier(random_state=seed_),
         {'mlpclassifier__hidden_layer_sizes':[10, 20, 30],
          'mlpclassifier__activation': ['relu', 'tanh'],
-         'mlpclassifier__learning_rate_init':[0.01, 0.001]
+         'mlpclassifier__learning_rate_init':[0.1, 0.01, 0.001]
          }
         ],
     hg = [HistGradientBoostingClassifier(),

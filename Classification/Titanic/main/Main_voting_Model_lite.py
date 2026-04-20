@@ -6,13 +6,17 @@ import yaml
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
-
-from utils.plots import separation_plan_plot
+from utils.utils import to_jsonl
+from utils.plots import separation_plan_plot, cross_validation_plot
 from functions.make_dataset import save_data
 from functions.train_model import train_voting_model, save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.voting_model import voting_model, models
+from functions.cross_validate import cross_validate_StratifiedKFold
+from datetime import datetime
+import warnings
+warnings.filterwarnings("ignore")
 
 def main_voting_model_lite(pipeline_name:str, scoring:str):
     
@@ -28,12 +32,12 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     with open(os.path.join(project_root, "Classification/Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
-    print("Iniciando pipeline de Machine Learning...")
+    print("Iniciando pipeline de Machine Learning voting...")
 
 
     # Get feature eng data     
     
-    # Datasets
+    # 1. Datasets
     X_train = pd.read_parquet(
        os.path.join(
            config['init_path'],
@@ -58,13 +62,13 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
            config['data']['feature_eng'],
             f"y_val_feat_eng_{pipeline_name}.parquet"))
 
-    # Drop columns
+    # 2. Drop columns
     X_train.drop(
-        columns=config_model['single_model']['cols_2_drop'],
+        columns=config_model['voting_model']['cols_2_drop'][pipeline_name],
         inplace=True)
     
     X_val.drop(
-        columns=config_model['single_model']['cols_2_drop'],
+        columns=config_model['voting_model']['cols_2_drop'][pipeline_name],
         inplace=True)   
 
 
@@ -76,43 +80,70 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
         )     
 
     # 4. train model
-    clf = train_voting_model(
+    model_config=dict(model_name = 'voting')
+    model_name = 'voting'
+    
+    model_clf = train_voting_model(
         X_train,
         y_train, 
         models(), 
         best_params
         )        
     
+    # save model info
+    model_info = [{
+        'model':model_name,
+        'best_paramns': best_params,
+        'undersamplig': None,
+        'model_type':'voting_model',
+        'timestamp': datetime.now().isoformat()        
+    }]       
+    print("\n")
+    print(model_info)
+    print("\n")
+    
+    path_model_info = os.path.join(
+        config['init_path'],
+        config['voting_model']['tables'],
+        "model_info.jsonl")    
+    to_jsonl(
+        pd.DataFrame(model_info), 
+        path_model_info, 
+        mode='append')
+    
+    
     # cross validation
-    # df_cv = cross_validate_StratifiedKFold(
-    #     X_train, 
-    #     y_train, 
-    #     model_clf,
-    #     model_config,
-    #     scoring=scoring
-    #     )
-    # print("\n")
-    # print(df_cv)
-    # print("\n")
-    # print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
-    # print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
+
+    df_cv = cross_validate_StratifiedKFold(
+        X_train, 
+        y_train, 
+        model_clf,
+        model_config,
+        scoring=scoring,
+        model_type='voting'
+        )
+    print("\n")
+    print(df_cv)
+    print("\n")
+    print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
+    print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
     
     
-    # save_path = os.path.join(
-    #     config['init_path'],
-    #     config['single_model']['plots'],
-    #     f"cross_validation_{model_name}.png")
+    save_path = os.path.join(
+        config['init_path'],
+        config['voting_model']['plots'],
+        f"cross_validation_{model_name}.png")
     
-    # cross_validation_plot(save_path, model_name, df_cv)
+    cross_validation_plot(save_path, model_name, df_cv)
     
-    # path_cv = os.path.join(
-    #     config['init_path'],
-    #     config['single_model']['tables'],
-    #     "cross_validate.jsonl")    
-    # to_jsonl(df_cv, path_cv, mode='append')
+    path_cv = os.path.join(
+        config['init_path'],
+        config['voting_model']['tables'],
+        "cross_validate.jsonl")    
+    to_jsonl(df_cv, path_cv, mode='append')
     
     # 5. Evaulate model
-    metrics_train = evaluate_model(clf, X_train, y_train)
+    metrics_train = evaluate_model(model_clf, X_train, y_train)
     
     print("\n")
     print('train metrics')
@@ -122,7 +153,7 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     print(f'roc_auc: {metrics_train["roc_auc_score"]}')
     print('\n')
     
-    metrics_val = evaluate_model(clf, X_val, y_val)
+    metrics_val = evaluate_model(model_clf, X_val, y_val)
     
     print("\n")
     print('Validation metrics')
@@ -155,10 +186,10 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
         config['init_path'],
         config['voting_model']['pkl'],
         f'voting_model_{pipeline_name}.pkl')     
-    save_model(clf, path_model)
+    save_model(model_clf, path_model)
     
     # 7. Make predict 
-    predictions, probabilities = make_prediction(clf, X_val)
+    predictions, probabilities = make_prediction(model_clf, X_val)
         
     path_data = os.path.join(
         config['init_path'],
@@ -180,7 +211,7 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     
     save_path = os.path.join(
         config['init_path'],
-        config['single_model']['plots'],
+        config['voting_model']['plots'],
         f"separation_plan_{model_name}.png")
     
     separation_plan_plot(

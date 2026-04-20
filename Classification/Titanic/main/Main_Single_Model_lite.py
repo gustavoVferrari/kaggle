@@ -72,11 +72,11 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
 
     # 2. Drop columns
     X_train.drop(
-        columns=config_model['single_model']['cols_2_drop'],
+        columns=config_model['single_model']['cols_2_drop'][pipeline_name],
         inplace=True)
     
     X_val.drop(
-        columns=config_model['single_model']['cols_2_drop'],
+        columns=config_model['single_model']['cols_2_drop'][pipeline_name],
         inplace=True)   
 
     # 3. Model Selection 
@@ -264,8 +264,8 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
    
 if __name__ == "__main__":
     main_single_model_lite(
-        pipeline_name="Pipeline3", 
-        model_name="LGBMClassifier",
+        pipeline_name="Pipeline2", 
+        model_name="KNeighborsClassifier",
         scoring="accuracy",
         grid_search_method='randomized_grid_search'
         )

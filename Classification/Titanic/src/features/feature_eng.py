@@ -133,7 +133,7 @@ def apply_preprocessing_pipeline_2(numerical_con: list, numerical_dis: list, cat
     rare_label = make_pipeline(
         RareLabelEncoder(
         variables=categorical_var,
-        tol=.15,
+        tol=.25,
         n_categories=2
     ))
     
@@ -147,7 +147,7 @@ def apply_preprocessing_pipeline_2(numerical_con: list, numerical_dis: list, cat
     
     
     numerical_pipe_con = make_pipeline(median, StandardScaler().set_output(transform="pandas"))
-    numerical_pipe_dis = make_pipeline(zero_inputer, MinMaxScaler().set_output(transform="pandas"))
+    numerical_pipe_dis = make_pipeline(zero_inputer, StandardScaler().set_output(transform="pandas"))
     numerical_transf = make_pipeline(median_fare, log_transform)
     categorical_pipe = make_pipeline(cat_imputer, rare_label, encoder)
     
