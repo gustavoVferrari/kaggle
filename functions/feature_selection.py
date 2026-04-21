@@ -3,9 +3,58 @@ import numpy as np
 from scipy import stats
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
-from feature_engine.selection import DropCorrelatedFeatures, SmartCorrelatedSelection
 from sklearn.ensemble import RandomForestClassifier
 from feature_engine.selection import SelectBySingleFeaturePerformance
+from feature_engine.selection import (
+    SelectBySingleFeaturePerformance, 
+    SmartCorrelatedSelection,
+    DropConstantFeatures,
+    DropDuplicateFeatures,
+    MRMR
+)
+
+def apply_MRMR(X_train, y_train, method):
+    
+    """ Apply MRMR technique."""        
+    
+    sel = MRMR(            
+        method=method,
+        random_state=23    
+    )
+    
+    sel.fit(X_train, y_train)
+    
+    return {"relevance":sel.relevance_, "features_to_drop":sel.features_to_drop_}
+
+def apply_DropConstantFeatures(X_train, y_train, threshold):
+    
+    """ Apply Drop Constant Features technique."""    
+    
+    
+    sel = DropConstantFeatures(        
+        tol=threshold,
+        missing_values="raise"
+    )
+    
+    sel.fit(X_train)
+    
+    return sel.features_to_drop_
+
+
+
+def apply_DropDuplicateFeatures(X_train, y_train):
+    
+    """ Apply Drop Duplicate Features technique."""    
+    
+    
+    sel = DropDuplicateFeatures(       
+
+        missing_values="raise"
+    )
+    
+    sel.fit(X_train)
+    
+    return sel.features_to_drop_
 
 def apply_MutualInformation_reg(X_train, y_train):
     
@@ -35,10 +84,9 @@ def apply_Anova(X_train, y_train):
     
     """ Apply Anova technique."""
     
-    select = X_train.columns.str.contains("numerical")
-    cols = X_train.columns
-    anova = f_classif(X_train[cols[select]], y_train)
-    s = pd.Series(anova[1], index=cols[select], name='Anova')      
+    numerical_col = list(X_train.select_dtypes(include=['number']).columns)
+    anova = f_classif(X_train[numerical_col], y_train)
+    s = pd.Series(anova[1], index=numerical_col, name='Anova')      
     s.sort_values(ascending=True, inplace=True) 
     
     return s
@@ -102,9 +150,18 @@ def apply_SmartCorrelatedSelection(X_train, y_train):
 
     sel.fit(X_train, y_train.values.ravel())
     
+    if not sel.correlated_feature_sets_:
+        return {
+            "corr_feature": [],
+            "corr_2_drop": sel.features_to_drop_,
+        }
+
     corr_features = list(sel.correlated_feature_sets_[0])
-    
-    return {"corr_feature" : corr_features, "corr_2_drop" : sel.features_to_drop_}
+
+    return {
+        "corr_feature": corr_features,
+        "corr_2_drop": sel.features_to_drop_,
+    }
 
 
 class FeatureSelectionOrchestrator:
@@ -115,12 +172,15 @@ class FeatureSelectionOrchestrator:
             "MutualInformationClassif": apply_MutualInformation_classif,
             "MutualInformationReg": apply_MutualInformation_reg,
             "PearsonCorrelation": apply_PearsonCorrelation,
-            "SmartCorrelatedSelection": apply_SmartCorrelatedSelection
+            "SmartCorrelatedSelection": apply_SmartCorrelatedSelection,
+            "DropConstantFeatures":apply_DropConstantFeatures,
+            "DropDuplicateFeatures":apply_DropDuplicateFeatures,
+            "MRMR":apply_MRMR
         }
         
-        under_samplig_methods = list(self.methods.keys())
+        feature_selection_methods = list(self.methods.keys())
         
-    def apply(self, method_name, X_train, y_train):
+    def apply(self, method_name, X_train, y_train, **kwargs):
         """
         Executa o método de undersampling escolhido.
         
@@ -133,11 +193,11 @@ class FeatureSelectionOrchestrator:
             X_resampled, y_resampled: Dados após o balanceamento.
         """
         if method_name not in self.methods:
-            raise ValueError(f"Método '{method_name}' não reconhecido. Escolha entre: {self.under_samplig_methods}")
+            raise ValueError(f"Método '{method_name}' não reconhecido. Escolha entre: {self.feature_selection_methods}")
         
         # Obtém a função correspondente e a executa
         sampling_func = self.methods[method_name]
-        return sampling_func(X_train, y_train)
+        return sampling_func(X_train, y_train, **kwargs)
     
 def SelectSingleFeature(clf, metric, X_train:pd.DataFrame, y_train: pd.DataFrame, threshold = 0.5):    
 

@@ -10,7 +10,7 @@ sys.path.insert(0, project_root)
 from functions.model_selection import grid_search_single_model_StratifiedKFold
 from functions.train_model import train_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator
-from functions.single_model import SingleModelOrchestrator
+from functions.single_model_clf import SingleModelOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
 
 def main_single_model_undersamplig(pipeline_name: str, model_name: str, scoring:str):

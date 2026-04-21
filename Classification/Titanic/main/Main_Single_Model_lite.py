@@ -18,7 +18,7 @@ from functions.evaluate_model import evaluate_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate_StratifiedKFold
 from functions.threshold_analysis import threshold_optimization
-from functions.single_model import SingleModelOrchestrator
+from functions.single_model_clf import SingleModelOrchestrator
 
 import warnings
 warnings.filterwarnings("ignore")

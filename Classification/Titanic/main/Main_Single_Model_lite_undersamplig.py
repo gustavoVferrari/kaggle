@@ -10,7 +10,7 @@ sys.path.insert(0, project_root)
 from utils.utils import to_jsonl
 from utils.plots import cross_validation_plot, separation_plan_plot
 from functions.make_dataset import save_data
-from functions.single_model import SingleModelOrchestrator
+from functions.single_model_clf import SingleModelOrchestrator
 from functions.model_selection import grid_search_single_model_StratifiedKFold
 from functions.train_model import train_model, save_model
 from functions.evaluate_model import evaluate_model, MetricsOrchestrator

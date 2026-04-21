@@ -31,5 +31,19 @@ def make_prediction(model, input_data):
     
     return df_predictions, df_probabilities
 
+
+def make_prediction_reg(model, input_data):
+    """Realiza predições em novos dados."""       
+    
+    predictions = model.predict(input_data)
+    
+    df_predictions = pd.DataFrame(
+        predictions,
+        index=input_data.index,
+        columns=["prediction"]
+    )
+
+    return df_predictions
+
 if __name__ == "__main__":
     print("Módulo de predição carregado.")
