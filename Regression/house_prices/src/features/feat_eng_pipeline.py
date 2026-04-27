@@ -104,7 +104,7 @@ def apply_preprocessing_pipeline_1(
     # numerical discrete
     median_dis_1 = MeanMedianImputer(
         imputation_method = 'median',
-        variables = numerical_dis_1)         
+        variables = numerical_dis_1)   
 
     
     num_dis_pipe = make_pipeline(
@@ -135,7 +135,7 @@ def apply_preprocessing_pipeline_1(
     categorical_pipe = make_pipeline(
         cat_imputer, 
         rare_label, 
-        # encoder
+        encoder
         )    
     
     preprocessor  = ColumnTransformer(
