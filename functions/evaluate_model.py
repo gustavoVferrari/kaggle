@@ -6,12 +6,15 @@ from sklearn.metrics import (
     accuracy_score,
     classification_report, 
     f1_score,     
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
     roc_auc_score
 )
 
 
-def evaluate_model(model, X_test, y_test, threshold=0.5):
-    """Avalia o desempenho do modelo."""
+def evaluate_clf_model(model, X_test, y_test, threshold=0.5):
+    """Avalia o desempenho do modelo de classificacao."""
     metrics = {}
     
     pred = model.predict(X_test)
@@ -26,6 +29,20 @@ def evaluate_model(model, X_test, y_test, threshold=0.5):
     metrics['f1_score'] = f1_score(y_test, pred)
     metrics['roc_auc_score'] = roc_auc_score(y_test, proba_raw) # Usando probabilidades brutas para ROC AUC
     
+    return metrics
+
+
+def evaluate_reg_model(model, X_test, y_test):
+    """Avalia o desempenho do modelo de regressao."""
+    metrics = {}
+
+    pred = model.predict(X_test)
+
+    metrics['mean_absolute_error'] = mean_absolute_error(y_test, pred)
+    metrics['mean_squared_error'] = mean_squared_error(y_test, pred)
+    metrics['root_mean_squared_error'] = np.sqrt(mean_squared_error(y_test, pred))
+    metrics['r2_score'] = r2_score(y_test, pred)
+
     return metrics
 
 
@@ -71,6 +88,33 @@ def save_classification_report(report_dict, model_name, dataset, undersampling=N
     return metric_data
 
 
+def save_mean_absolute_error(mean_absolute_error_value, model_name, dataset, undersampling=None):
+    """Salva a metrica mean absolute error em um dicionario de dados."""
+    return _create_metric_data(
+        'mean_absolute_error',
+        model_name,
+        dataset,
+        mean_absolute_error_value,
+        undersampling=undersampling
+    )
+
+
+def save_mean_squared_error(mean_squared_error_value, model_name, dataset, undersampling=None):
+    """Salva a metrica mean squared error em um dicionario de dados."""
+    return _create_metric_data(
+        'mean_squared_error',
+        model_name,
+        dataset,
+        mean_squared_error_value,
+        undersampling=undersampling
+    )
+
+
+def save_r2_score(r2_value, model_name, dataset, undersampling=None):
+    """Salva a metrica R2 score em um dicionario de dados."""
+    return _create_metric_data('r2_score', model_name, dataset, r2_value, undersampling=undersampling)
+
+
 class MetricsOrchestrator:
     def __init__(self, output_dir='metrics'):
         """
@@ -86,7 +130,10 @@ class MetricsOrchestrator:
             "accuracy_score": save_accuracy_score,
             "f1_score": save_f1_score,
             "roc_auc_score": save_roc_auc_score,
-            "classification_report": save_classification_report
+            "classification_report": save_classification_report,
+            "mean_absolute_error": save_mean_absolute_error,
+            "mean_squared_error": save_mean_squared_error,
+            "r2_score": save_r2_score
         }
         
         self.metric_methods = list(self.methods.keys())
@@ -137,7 +184,10 @@ class MetricsOrchestrator:
                     'accuracy_score': 0.85,
                     'f1_score': 0.83,
                     'roc_auc_score': 0.90,
-                    'classification_report': {...}
+                    'classification_report': {...},
+                    'mean_absolute_error': 1000.0,
+                    'mean_squared_error': 2000000.0,
+                    'r2_score': 0.75
                 }
             model_name (str): Nome do modelo executado.
             dataset (str): Nome do dataset utilizado.
@@ -185,6 +235,33 @@ class MetricsOrchestrator:
             results['classification_report'] = self.save_metric(
                 'classification_report', 
                 metrics_dict['classification_report'], 
+                model_name,
+                dataset=dataset,
+                undersampling=undersampling
+            )
+
+        if 'mean_absolute_error' in metrics_dict:
+            results['mean_absolute_error'] = self.save_metric(
+                'mean_absolute_error',
+                metrics_dict['mean_absolute_error'],
+                model_name,
+                dataset=dataset,
+                undersampling=undersampling
+            )
+
+        if 'mean_squared_error' in metrics_dict:
+            results['mean_squared_error'] = self.save_metric(
+                'mean_squared_error',
+                metrics_dict['mean_squared_error'],
+                model_name,
+                dataset=dataset,
+                undersampling=undersampling
+            )
+
+        if 'r2_score' in metrics_dict:
+            results['r2_score'] = self.save_metric(
+                'r2_score',
+                metrics_dict['r2_score'],
                 model_name,
                 dataset=dataset,
                 undersampling=undersampling

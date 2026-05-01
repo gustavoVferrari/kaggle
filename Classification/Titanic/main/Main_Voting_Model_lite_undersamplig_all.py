@@ -8,7 +8,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 from functions.train_model import train_voting_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.voting_model import voting_model, models
 from functions.undersamplig import UnderSampligOrchestrator
 
@@ -109,7 +109,7 @@ def main_voting_model_undersamplig(pipeline_name: str, scoring:str):
     
 
         # 5. Evaulate model
-        metrics_train = evaluate_model(model_clf, X_resampled, y_resampled)
+        metrics_train = evaluate_clf_model(model_clf, X_resampled, y_resampled)
         
         print('\n')
         print('train metrics')
@@ -118,7 +118,7 @@ def main_voting_model_undersamplig(pipeline_name: str, scoring:str):
         print(f"roc_auc: {metrics_train['roc_auc_score']}")
         print('\n')
     
-        metrics_val = evaluate_model(model_clf, X_val, y_val)
+        metrics_val = evaluate_clf_model(model_clf, X_val, y_val)
         
         print('\n')
         print('Validation metrics')

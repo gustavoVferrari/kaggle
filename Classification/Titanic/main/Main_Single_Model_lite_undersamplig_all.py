@@ -9,7 +9,7 @@ sys.path.insert(0, project_root)
 
 from functions.model_selection import grid_search_single_model_StratifiedKFold
 from functions.train_model import train_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.single_model_clf import SingleModelOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
 
@@ -110,7 +110,7 @@ def main_single_model_undersamplig(pipeline_name: str, model_name: str, scoring:
             best_paramns)             
        
         # 5. Evaulate model
-        metrics_train = evaluate_model(clf, X_train, y_train)
+        metrics_train = evaluate_clf_model(clf, X_train, y_train)
         
         print('\n')
         print('train metrics')
@@ -119,7 +119,7 @@ def main_single_model_undersamplig(pipeline_name: str, model_name: str, scoring:
         print(f"roc_auc: {metrics_train['roc_auc_score']}")
         print('\n')
     
-        metrics_val = evaluate_model(clf, X_val, y_val)
+        metrics_val = evaluate_clf_model(clf, X_val, y_val)
         
         print('\n')
         print('Validation metrics')

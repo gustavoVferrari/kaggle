@@ -12,7 +12,7 @@ from functions.make_dataset import save_data
 from utils.plots import separation_plan_plot
 from utils.utils import to_jsonl
 from functions.train_model import save_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.ann_model import KerasBinaryClassifier
 
@@ -100,7 +100,7 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
     clf = model.fit(X_train, y_train)             
     
     # 5. Evaulate model
-    metrics_train = evaluate_model(clf, X_train, y_train)
+    metrics_train = evaluate_clf_model(clf, X_train, y_train)
     
     print('\n')
     print('train metrics')
@@ -110,7 +110,7 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
     print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
     
-    metrics_val = evaluate_model(clf, X_val, y_val)
+    metrics_val = evaluate_clf_model(clf, X_val, y_val)
     
     print('\n')
     print('Validation metrics')

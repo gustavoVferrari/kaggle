@@ -12,7 +12,7 @@ from functions.make_dataset import save_data
 from functions.multi_model_gs import ModelOrchestrator
 from functions.model_selection import grid_search_models
 from functions.train_model import train_model, save_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate_StratifiedKFold
 from functions.threshold_analysis import threshold_optimization
@@ -117,7 +117,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
     
     
     # 5. Evaulate model
-    metrics_train = evaluate_model(model_clf, X_train, y_train)
+    metrics_train = evaluate_clf_model(model_clf, X_train, y_train)
     
     print('train metrics')
     print(f"report: {metrics_train['classification_report']}")
@@ -126,7 +126,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str):
     print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
     
-    metrics_val = evaluate_model(clf, X_val, y_val)
+    metrics_val = evaluate_clf_model(clf, X_val, y_val)
     
     print('Validation metrics')
     print(f"report: {metrics_val['classification_report']}")

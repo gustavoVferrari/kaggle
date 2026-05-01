@@ -13,7 +13,7 @@ from functions.make_dataset import save_data
 from functions.single_model_clf import SingleModelOrchestrator
 from functions.model_selection import grid_search_single_model_StratifiedKFold
 from functions.train_model import train_model, save_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate_StratifiedKFold
@@ -148,7 +148,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
         mode='append')
     
     # 7. Evaulate model
-    metrics_train = evaluate_model(
+    metrics_train = evaluate_clf_model(
         model_clf, 
         X_train, 
         y_train)
@@ -161,7 +161,7 @@ def main_single_model_undersamplig(pipeline_name:str, model_name:str, undersampl
     print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
     
-    metrics_val = evaluate_model(
+    metrics_val = evaluate_clf_model(
         model_clf,
         X_val,
         y_val)

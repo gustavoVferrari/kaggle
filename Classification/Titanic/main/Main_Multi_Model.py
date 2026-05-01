@@ -15,7 +15,7 @@ from src.features.feature_eng import PreprocessingOrchestrator
 from functions.multi_model_gs import ModelOrchestrator
 from functions.model_selection import grid_search
 from functions.train_model import train_model, save_model, save_pipeline
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.undersamplig import UnderSampligOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate
@@ -119,7 +119,7 @@ def main_single_model():
     to_jsonl(df_cv, path_cv, mode='append')
     
     # 5. Evaulate model
-    metrics = evaluate_model(clf, X_val, y_val)
+    metrics = evaluate_clf_model(clf, X_val, y_val)
     
     print(f'report: {metrics['classification_report']}')
     print('\n')

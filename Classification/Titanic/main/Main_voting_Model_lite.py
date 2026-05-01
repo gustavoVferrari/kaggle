@@ -10,7 +10,7 @@ from utils.utils import to_jsonl
 from utils.plots import separation_plan_plot, cross_validation_plot
 from functions.make_dataset import save_data
 from functions.train_model import train_voting_model, save_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.voting_model import voting_model, models
 from functions.cross_validate import cross_validate_StratifiedKFold
@@ -143,7 +143,7 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     to_jsonl(df_cv, path_cv, mode='append')
     
     # 5. Evaulate model
-    metrics_train = evaluate_model(model_clf, X_train, y_train)
+    metrics_train = evaluate_clf_model(model_clf, X_train, y_train)
     
     print("\n")
     print('train metrics')
@@ -153,7 +153,7 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     print(f'roc_auc: {metrics_train["roc_auc_score"]}')
     print('\n')
     
-    metrics_val = evaluate_model(model_clf, X_val, y_val)
+    metrics_val = evaluate_clf_model(model_clf, X_val, y_val)
     
     print("\n")
     print('Validation metrics')

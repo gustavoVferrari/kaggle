@@ -106,7 +106,7 @@ def grid_search_single_model_StratifiedKFold(
     y_train:pd.DataFrame, 
     model, 
     param_grid:dict,
-    n_splits:int=5,
+    n_splits:int=3,
     scoring:str='accuracy', 
     ):    
     """Grid search with stratified K-Fold CV for a single estimator.
@@ -134,7 +134,9 @@ def grid_search_single_model_StratifiedKFold(
         param_grid=param_grid,
         scoring=scoring,
         cv=skf,
-        refit=True
+        refit=True,
+        verbose=1,
+        n_jobs=-1
     )
     
     search = gs.fit(X_train, y_train)

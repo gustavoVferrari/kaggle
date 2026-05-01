@@ -45,13 +45,13 @@ def apply_lightGBM_regressor():
     """Apply LGBMRegressor model configuration."""
     model = LGBMRegressor(random_state=23)
     param_grid = {
-        "n_estimators": [50, 100, 200, 400],
+        "n_estimators": [100, 200, 400],
         "learning_rate": [0.01, 0.05, 0.1],
-        "num_leaves": [15, 31, 63],
-        "max_depth": [-1, 5, 10, 20],
+        "num_leaves": [5, 15, 20],
+        "max_depth": [-1, 5, 10],
         "min_child_samples": [10, 20, 30],
         "subsample": [0.6, 0.8, 1.0],
-        "colsample_bytree": [0.6, 0.8, 1.0],
+        # "colsample_bytree": [0.6, 0.8, 1.0],
         "reg_alpha": [0.0, 0.1, 1.0],
         "reg_lambda": [0.0, 0.1, 1.0],
     }
@@ -192,13 +192,13 @@ def apply_random_forest():
     """Apply RandomForestRegressor model configuration."""
     model = RandomForestRegressor(random_state=23)
     param_grid = {
-        "n_estimators": [150, 200, 300, 400, 500],
+        "n_estimators": [300, 400, 500],
         "criterion": ["squared_error", "absolute_error", "friedman_mse"],
-        "max_depth": [None, 4, 5, 7, 10],
+        "max_depth": [4, 5, 7, 10],
         "min_samples_split": [2, 5, 9],
-        "min_samples_leaf": [1, 2, 4],
+        "min_samples_leaf": [2, 4, 8],
         "max_features": ["sqrt", "log2", None],
-        "bootstrap": [True, False],
+        "bootstrap": [True], 
     }
     param_distributions = {
         "n_estimators": randint(100, 600),
@@ -319,7 +319,7 @@ class SingleModelOrchestrator:
         self.methods = {
             "RidgeRegressor": apply_ridge_regression,
             "KNeighborsRegressor": apply_knn_regressor,
-            "SVRehressor": apply_svm_regressor,
+            "SVRRegressor": apply_svm_regressor,
             "RandomForestRegressor": apply_random_forest,
             "MLPRegressor": apply_mlp,
             "AdaBoostRegressor": apply_adaboost,

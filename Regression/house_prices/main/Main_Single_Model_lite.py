@@ -1,4 +1,4 @@
-import yaml
+﻿import yaml
 import pandas as pd
 import os
 import sys
@@ -12,7 +12,7 @@ from utils.plots import cross_validation_plot
 from functions.make_dataset import save_data
 from functions.model_selection import grid_search_single_model_StratifiedKFold, randomized_single_model_grid_search
 from functions.train_model import train_model, save_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_reg_model, MetricsOrchestrator
 from functions.predict_model import make_prediction_reg
 from functions.cross_validate import cross_validate_StratifiedKFold
 from functions.single_model_reg import SingleModelOrchestrator
@@ -66,13 +66,15 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
    )
 
     # Drop columns
-    # X_train.drop(
-    #     columns=config_model['single_model']['cols_2_drop'],
-    #     inplace=True)
     
-    # X_val.drop(
-    #     columns=config_model['single_model']['cols_2_drop'],
-    #     inplace=True)   
+    X_train.drop(
+            columns=config_model['single_model']['cols_2_drop'],
+            inplace=True)
+        
+    X_val.drop(
+            columns=config_model['single_model']['cols_2_drop'],
+            inplace=True)   
+
 
     # 3. Model Selection   
     model_orchestrator = SingleModelOrchestrator()
@@ -80,6 +82,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
          
     if grid_search_method == "grid_search":
         # find best params     
+        print(f"Running grid search with {scoring} as metric and {model_name} as model")
         best_paramns = grid_search_single_model_StratifiedKFold(
             X_train, 
             y_train, 
@@ -88,6 +91,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
             scoring=scoring
             )     
     elif grid_search_method == "randomized_grid_search":
+        print(f"Running randomized grid search with {scoring} as metric and {model_name} as model")
         best_paramns = randomized_single_model_grid_search(
             X_train, 
             y_train, 
@@ -126,38 +130,37 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
         model_config,
         scoring=scoring
         )
-    print("\n")
-    print(df_cv)
-    print("\n")
-    print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
-    print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
-    
-    print(df_cv)
-    
+    print(df_cv, end='\n')
+    print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}", end='\n')
+    print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}", end='\n')
+        
     path_cv = os.path.join(
         config['init_path'],
         config['single_model']['tables'],
         "cross_validate.jsonl")    
-    to_jsonl(df_cv, path_cv, mode='append')
-    
+    to_jsonl(df_cv, path_cv, mode='append')    
     
     # 5. Evaulate model
-    metrics_train = evaluate_model(model_reg, X_train, y_train)
+    metrics_train = evaluate_reg_model(
+        model_reg, 
+        X_train,
+        y_train
+        )
     
     print('train metrics')
-    print(f"report: {metrics_train['classification_report']}")
-    print(f"acurácia: {metrics_train['accuracy_score']}")   
-    print(f"f1: {metrics_train['f1_score']}")
-    print(f"roc_auc: {metrics_train['roc_auc_score']}")
+    print(f"mean_absolute_error: {metrics_train['mean_absolute_error']}")
+    print(f"mean_squared_error: {metrics_train['mean_squared_error']}")
+    print(f"root_mean_squared_error: {metrics_train['root_mean_squared_error']}")
+    print(f"r2_score: {metrics_train['r2_score']}")
     print('\n')
     
-    metrics_val = evaluate_model(model_reg, X_val, y_val)
+    metrics_val = evaluate_reg_model(model_reg, X_val, y_val)
     
     print('Validation metrics')
-    print(f"report: {metrics_val['classification_report']}")
-    print(f"acurácia: {metrics_val['accuracy_score']}")   
-    print(f"f1: {metrics_val['f1_score']}")
-    print(f"roc_auc: {metrics_val['roc_auc_score']}")
+    print(f"mean_absolute_error: {metrics_val['mean_absolute_error']}")
+    print(f"mean_squared_error: {metrics_val['mean_squared_error']}")
+    print(f"root_mean_squared_error: {metrics_val['root_mean_squared_error']}")
+    print(f"r2_score: {metrics_val['r2_score']}")
     print('\n')
     
     # Save Metrics
@@ -177,21 +180,20 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
     save_model(model_reg, path_model)
     
     # 7. Make predict 
-    predictions, probabilities = make_prediction_reg(model_reg, X_val)
+    predictions = make_prediction_reg(model_reg, X_val)
         
     path_data = os.path.join(
         config['init_path'],
         config['single_model']['predicts'])    
     model_name = model_config['model_name']
     
-    save_data(path_data, f"X_val_pred_{model_name}", predictions)
-    save_data(path_data, f"X_val_proba_{model_name}", probabilities)        
+    save_data(path_data, f"X_val_pred_{model_name}", predictions) 
     
    
 if __name__ == "__main__":
     main_single_model_lite(
         pipeline_name="pipeline1", 
-        model_name="RidgeRegressor",
-        scoring="neg_mean_squared_error",
-        grid_search_method='randomized_grid_search'
+        model_name="RandomForestRegressor",
+        scoring="neg_mean_absolute_percentage_error",
+        grid_search_method='grid_search'
         )

@@ -14,7 +14,7 @@ from utils.plots import cross_validation_plot, separation_plan_plot
 from functions.make_dataset import save_data
 from functions.model_selection import grid_search_single_model_StratifiedKFold, randomized_single_model_grid_search
 from functions.train_model import train_model, save_model
-from functions.evaluate_model import evaluate_model, MetricsOrchestrator
+from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
 from functions.cross_validate import cross_validate_StratifiedKFold
 from functions.threshold_analysis import threshold_optimization
@@ -166,7 +166,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
     
     
     # 6. Evaulate model
-    metrics_train = evaluate_model(
+    metrics_train = evaluate_clf_model(
         model_clf, 
         X_train, 
         y_train
@@ -180,7 +180,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
     print(f"roc_auc: {metrics_train['roc_auc_score']}")
     print('\n')
     
-    metrics_val = evaluate_model(
+    metrics_val = evaluate_clf_model(
         model_clf, 
         X_val, 
         y_val

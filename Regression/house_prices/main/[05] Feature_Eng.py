@@ -43,7 +43,7 @@ def main_feature_eng(pipeline_name: str):
     # 2. Processamento de dados    
     X_train, X_val, y_train, y_val = split_data(
         df, 
-        target_column=config_pipe['features']['pipeline1']['target'][0]
+        target_column=config_pipe['features']['target'][0]
         )
 
     # 3. Feature Engineering        
