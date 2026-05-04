@@ -23,7 +23,12 @@ from functions.single_model_clf import SingleModelOrchestrator
 import warnings
 warnings.filterwarnings("ignore")
 
-def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_search_method:str):
+def main_single_model_lite(
+    pipeline_name:str,
+    model_name:str, 
+    scoring:str, 
+    grid_search_method:str, 
+    manual_params:dict=None):
     
     # Carregar configurações
     with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
@@ -85,6 +90,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
     model_config = model_orchestrator.apply(model_name)  
     
     if grid_search_method == "grid_search":
+        print("Running Grid Search with StratifiedKFold...")
         # find best params     
         best_paramns = grid_search_single_model_StratifiedKFold(
             X_train, 
@@ -94,15 +100,19 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
             scoring=scoring
             )     
     elif grid_search_method == "randomized_grid_search":
+        print("Running Randomized Grid Search with StratifiedKFold...")
         best_paramns = randomized_single_model_grid_search(
             X_train, 
             y_train, 
             model_config['model'], 
             model_config['param_distributions'], 
             scoring=scoring
-            ) 
+            )
+    elif grid_search_method == "no_grid_search":
+        print("Using manual parameters...")
+        best_paramns = manual_params 
     else:
-        raise KeyError('please select a grid_search method between:[ grid_search, randomized_grid_search]')
+        raise KeyError('please select a grid_search method between:[ grid_search, randomized_grid_search, no_grid_search]')
     
     # save model info
     model_info = [{
@@ -263,9 +273,32 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
       
    
 if __name__ == "__main__":
+    
+    
     main_single_model_lite(
-        pipeline_name="Pipeline2", 
-        model_name="KNeighborsClassifier",
+        pipeline_name="Pipeline3", 
+        model_name="RandomForestClassifier",
         scoring="accuracy",
-        grid_search_method='randomized_grid_search'
+        grid_search_method='no_grid_search',
+        manual_params={
+            'bootstrap': True,
+            'ccp_alpha': 0.0,
+            'class_weight': None,
+            'criterion': 'gini',
+            'max_depth': 3,
+            'max_features': None,
+            'max_leaf_nodes': 8,
+            'max_samples': None,
+            'min_impurity_decrease': 0.0,
+            'min_samples_leaf': 10,
+            'min_samples_split': 2,
+            'min_weight_fraction_leaf': 0.0,
+            'monotonic_cst': None,
+            'n_estimators': 170,
+            'n_jobs': -1,
+            'oob_score': False,
+            'random_state': 23,
+            'verbose': 0,
+            'warm_start': False}
+        
         )

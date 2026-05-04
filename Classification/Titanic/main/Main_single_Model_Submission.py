@@ -72,6 +72,6 @@ def main_submission(threshold: float, pipeline_name: str, model_name: str):
 if __name__ == "__main__":
     main_submission(
         threshold=0.5, 
-        pipeline_name="Pipeline2",
-        model_name="LGBMClassifier"
+        pipeline_name="Pipeline3",
+        model_name="RandomForestClassifier"
         )
