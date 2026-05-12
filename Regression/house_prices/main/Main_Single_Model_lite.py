@@ -195,5 +195,5 @@ if __name__ == "__main__":
         pipeline_name="pipeline1", 
         model_name="RandomForestRegressor",
         scoring="neg_mean_absolute_percentage_error",
-        grid_search_method='grid_search'
+        grid_search_method='randomized_grid_search'
         )

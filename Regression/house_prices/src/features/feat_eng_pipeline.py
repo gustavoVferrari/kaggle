@@ -3,8 +3,8 @@ from feature_engine.imputation import MeanMedianImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from feature_engine.outliers import Winsorizer
-from feature_engine.transformation import LogCpTransformer
-from sklearn.preprocessing import MinMaxScaler
+from feature_engine.transformation import BoxCoxTransformer
+from sklearn.preprocessing import MinMaxScaler, RobustScaler
 from feature_engine.discretisation import DecisionTreeDiscretiser, GeometricWidthDiscretiser
 from feature_engine.imputation import CategoricalImputer
 from feature_engine.encoding import OneHotEncoder, RareLabelEncoder, OrdinalEncoder, WoEEncoder
@@ -67,6 +67,9 @@ def apply_preprocessing_pipeline_1(
     categorical_1:list
     ):
     
+    
+    numerical_con_1 = [i for i in numerical_con_1 if i not in ['TotalBsmtSF']]
+    
     # numerical continuous 1
     median_con_1 = MeanMedianImputer(
         imputation_method = 'median',
@@ -75,12 +78,33 @@ def apply_preprocessing_pipeline_1(
     outlier_1 = Winsorizer(
         variables=numerical_con_1, 
         capping_method='gaussian', 
-        fold=4)
+        fold=5)
     
-    log_transf = LogCpTransformer(
+    log_transf = BoxCoxTransformer(
         variables=numerical_con_1
         )  
     
+    # aplly robust sclaer only to BS    
+    median_con_1_robust = MeanMedianImputer(
+        imputation_method = 'median',
+        variables = ['TotalBsmtSF'])
+    
+    robust_pipe = make_pipeline(
+    RobustScaler(quantile_range=(25, 75)).set_output(transform="pandas")
+    )
+    
+    outlier_2 = Winsorizer(
+        variables=['TotalBsmtSF'], 
+        capping_method='gaussian', 
+        fold=5)
+    
+
+    num_con_1_robust_pipe = make_pipeline(
+        median_con_1_robust,
+        robust_pipe,
+        outlier_2
+        )
+        
     num_con_1_pipe = make_pipeline(
         median_con_1,
         outlier_1,
@@ -143,7 +167,8 @@ def apply_preprocessing_pipeline_1(
             ("num_con_1_pipe", num_con_1_pipe, numerical_con_1),
             ("num_con_2_pipe", num_con_2_pipe, numerical_con_2),
             ("num_dis_pipe", num_dis_pipe, numerical_dis_1),
-            ("categorical_pipe", categorical_pipe, categorical_1)            
+            ("categorical_pipe", categorical_pipe, categorical_1),
+            ('num_con_1_robust', num_con_1_robust_pipe, ['TotalBsmtSF'])
             ])
     
     pipe = make_pipeline(   
