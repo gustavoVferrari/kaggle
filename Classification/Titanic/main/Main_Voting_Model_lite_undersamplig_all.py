@@ -9,7 +9,7 @@ sys.path.insert(0, project_root)
 
 from functions.train_model import train_voting_model
 from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
-from functions.voting_model import voting_model, models
+from functions.voting_model_clf import voting_model, models
 from functions.undersamplig import UnderSampligOrchestrator
 
 def main_voting_model_undersamplig(pipeline_name: str, scoring:str):

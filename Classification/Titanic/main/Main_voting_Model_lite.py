@@ -9,10 +9,10 @@ sys.path.insert(0, project_root)
 from utils.utils import to_jsonl
 from utils.plots import separation_plan_plot, cross_validation_plot
 from functions.make_dataset import save_data
-from functions.train_model import train_voting_model, save_model
+from functions.train_model import train_voting_model_clf, save_model
 from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.predict_model import make_prediction
-from functions.voting_model import voting_model, models
+from functions.voting_model_clf import voting_model, models
 from functions.cross_validate import cross_validate_StratifiedKFold
 from datetime import datetime
 import warnings
@@ -83,11 +83,12 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     model_config=dict(model_name = 'voting')
     model_name = 'voting'
     
-    model_clf = train_voting_model(
-        X_train,
-        y_train, 
-        models(), 
-        best_params
+    model_clf = train_voting_model_clf(
+        X_train=X_train,
+        y_train=y_train, 
+        models=models(), 
+        best_models_params=best_params,
+        search_type="randomized"
         )        
     
     # save model info
@@ -97,10 +98,9 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
         'undersamplig': None,
         'model_type':'voting_model',
         'timestamp': datetime.now().isoformat()        
-    }]       
-    print("\n")
-    print(model_info)
-    print("\n")
+    }]      
+   
+    print(model_info, end="\n")    
     
     path_model_info = os.path.join(
         config['init_path'],
@@ -110,10 +110,8 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
         pd.DataFrame(model_info), 
         path_model_info, 
         mode='append')
-    
-    
+        
     # cross validation
-
     df_cv = cross_validate_StratifiedKFold(
         X_train, 
         y_train, 
@@ -122,9 +120,8 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
         scoring=scoring,
         model_type='voting'
         )
-    print("\n")
-    print(df_cv)
-    print("\n")
+    
+    print(df_cv, end='\n')
     print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}")
     print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}")
     
