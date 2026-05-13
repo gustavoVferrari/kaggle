@@ -44,10 +44,10 @@ def main_submission(pipeline_name: str, model_name: str):
 
     y_test_id = y_test_id[['Id']].copy()
     
-    X_test.drop(
-        columns = config_model['single_model']['cols_2_drop'],
-        inplace=True
-    )   
+    # X_test.drop(
+    #     columns = config_model['single_model']['cols_2_drop'],
+    #     inplace=True
+    # )   
     
     model_path = os.path.join(
            config['init_path'],
@@ -58,7 +58,7 @@ def main_submission(pipeline_name: str, model_name: str):
         model = pickle.load(file)
         
     # predict        
-    y_test_id.loc[:,f"{config_pipe['features']['target'][0]}"] = model.predict(X_test)
+    y_test_id.loc[:,f"{config_pipe['features']['target'][0]}"] = np.expm1(model.predict(X_test))
     
     y_test_id.to_csv(
         os.path.join(

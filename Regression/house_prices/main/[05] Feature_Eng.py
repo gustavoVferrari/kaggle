@@ -76,6 +76,7 @@ def main_feature_eng(pipeline_name: str):
     save_data(path_data, f"X_train_feat_eng_{pipeline_name}", X_train)
     save_data(path_data, f"Y_train_feat_eng_{pipeline_name}", y_train)   
     
+    print(f"pipeline de Feature enginneering {pipeline_name} concluido")
    
 if __name__ == "__main__":
     main_feature_eng(pipeline_name = "pipeline1")

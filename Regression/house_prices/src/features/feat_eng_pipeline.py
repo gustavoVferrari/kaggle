@@ -4,7 +4,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from feature_engine.outliers import Winsorizer
 from feature_engine.transformation import BoxCoxTransformer
-from sklearn.preprocessing import MinMaxScaler, RobustScaler
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from feature_engine.discretisation import DecisionTreeDiscretiser, GeometricWidthDiscretiser
 from feature_engine.imputation import CategoricalImputer
 from feature_engine.encoding import OneHotEncoder, RareLabelEncoder, OrdinalEncoder, WoEEncoder
@@ -173,7 +173,7 @@ def apply_preprocessing_pipeline_1(
     
     pipe = make_pipeline(   
         preprocessor.set_output(transform="pandas"),
-        # MinMaxScaler().set_output(transform="pandas")               
+        # StandardScaler().set_output(transform="pandas")               
         )      
     
     return pipe

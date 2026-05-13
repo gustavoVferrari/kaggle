@@ -18,6 +18,8 @@ def FeatureCreation(dataset_path:str, save_path:str, train:bool=True) -> None:
         dataset_path = os.path.join(dataset_path, "train.csv")
         df = pd.read_csv(dataset_path)
         df['TotalBsmtSF'] = df['TotalBsmtSF'].apply(lambda row: np.nan if row == 0 else row)
+        df['SalePrice'] = np.log1p(df['SalePrice'])
+        
         
     else:
         dataset_path = os.path.join(dataset_path, "test.csv")

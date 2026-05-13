@@ -96,8 +96,10 @@ def cross_validate_kfold(
     X_train: pd.DataFrame,
     y_train: pd.DataFrame,
     model,
-    scoring:str='accuracy',
+    model_config:dict,
+    score:str,
     n_splits:int=5, 
+    model_type:str='single_model',
     shuffle:bool=True):
     """Run basic K-Fold CV and return per-fold train/test scores.
 
@@ -119,23 +121,39 @@ def cross_validate_kfold(
     kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=23)
     
     # search
-    clf = cross_validate(
+    cv = cross_validate(
         estimator=model,
         X=X_train,
         y=y_train,
-        scoring=scoring,
+        scoring=score,
         return_train_score=True,
         cv=kf
     )
     
-    return {'train_score':clf['train_score'], 'test_score':clf['test_score']}
+    cv_result = {'train_score':cv['train_score'], 'test_score':cv['test_score']}
+    
+    df_score = (pd.DataFrame
+                .from_dict(cv_result, orient='columns')
+                .reset_index()
+                .rename(columns={'index':'fold'})
+                .rename(columns={'test_score':'val_score'})
+                )
+    
+    df_score = (df_score.assign(
+        scoring=score,
+        model_type = model_type,
+        model = lambda x: model_config['model_name'], 
+        timestamp = lambda x: datetime.now().isoformat())
+                )
+    
+    return df_score
 
 def cross_validate_StratifiedKFold(
     X_train: pd.DataFrame,
     y_train: pd.DataFrame,
     model_clf,
     model_config:dict,
-    scoring:str='accuracy',
+    scoring:str,
     n_splits:int=5, 
     model_type:str='single_model',
     shuffle:bool=True):

@@ -8,16 +8,23 @@ project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
 from utils.utils import to_jsonl
-from utils.plots import cross_validation_plot
 from functions.make_dataset import save_data
 from functions.model_selection import grid_search_single_model_StratifiedKFold, randomized_single_model_grid_search
 from functions.train_model import train_model, save_model
 from functions.evaluate_model import evaluate_reg_model, MetricsOrchestrator
 from functions.predict_model import make_prediction_reg
-from functions.cross_validate import cross_validate_StratifiedKFold
+from functions.cross_validate import cross_validate_kfold
 from functions.single_model_reg import SingleModelOrchestrator
 
-def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_search_method:str):
+
+
+def main_single_model_lite(
+    pipeline_name:str, 
+    model_name:str, 
+    scoring:str, 
+    grid_search_method:str,
+    manual_params:dict=None
+    ):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
@@ -31,12 +38,12 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
     with open(os.path.join(project_root, "Regression/house_prices/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
-    print(f"Iniciando pipeline de Machine Learning {model_name}, scoring {scoring} with {pipeline_name}")
+    print(f"Iniciando pipeline de Machine Learning {model_name}, scoring {scoring} with {pipeline_name}", end='\n')
 
 
     # Get feature eng data   
     
-    # Datasets
+    # Datasets X_train
     X_train = pd.read_parquet(
        os.path.join(
            config['init_path'],
@@ -51,6 +58,7 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
             f"y_train_feat_eng_{pipeline_name}.parquet")
    )
     
+    # Datasets Y_train
     X_val = pd.read_parquet(
        os.path.join(
            config['init_path'],
@@ -65,15 +73,13 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
             f"y_val_feat_eng_{pipeline_name}.parquet")
    )
 
-    # Drop columns
-    
-    X_train.drop(
-            columns=config_model['single_model']['cols_2_drop'],
-            inplace=True)
-        
-    X_val.drop(
-            columns=config_model['single_model']['cols_2_drop'],
-            inplace=True)   
+    # Drop columns    
+    # X_train.drop(
+    #         columns=config_model['single_model']['cols_2_drop'],
+    #         inplace=True)        
+    # X_val.drop(
+    #         columns=config_model['single_model']['cols_2_drop'],
+    #         inplace=True)   
 
 
     # 3. Model Selection   
@@ -99,8 +105,11 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
             model_config['param_distributions'], 
             scoring=scoring
             ) 
+    elif grid_search_method == "no_grid_search":
+        print("Using manual parameters...")
+        best_paramns = manual_params 
     else:
-        raise KeyError('please select a grid_search method between:[ grid_search, randomized_grid_search]')  
+        raise KeyError('please select a grid_search method between:[ grid_search, randomized_grid_search, no_grid_search]')
     
     
     # save model info
@@ -109,11 +118,10 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
         'best_paramns': best_paramns,
         'undersamplig': None,
         'model_type':'single_model',
-        'timestamp': datetime.now().isoformat()        
+        'timestamp': datetime.now().isoformat()         
     }]       
-    print("\n")
-    print(model_info)
-    print("\n")
+
+    print(model_info, end='\n')
         
     # 4. train model
     model_reg = train_model(
@@ -122,14 +130,15 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
         model_config['model'], 
         best_paramns)
     
-    # 5. cross-validade
-    df_cv = cross_validate_StratifiedKFold(
-        X_train, 
-        y_train, 
-        model_reg,
-        model_config,
-        scoring=scoring
+    # 5. cross-validade 
+    df_cv = cross_validate_kfold(
+        X_train=X_train, 
+        y_train=y_train, 
+        model=model_reg,
+        model_config=model_config,
+        score=scoring        
         )
+    
     print(df_cv, end='\n')
     print(f"Mean train score {df_cv['scoring'].unique()[0]}: {df_cv['train_score'].mean()} +- {df_cv['train_score'].std()}", end='\n')
     print(f"Mean val score {df_cv['scoring'].unique()[0]}: {df_cv['val_score'].mean()} +- {df_cv['val_score'].std()}", end='\n')
@@ -147,21 +156,20 @@ def main_single_model_lite(pipeline_name:str, model_name:str, scoring:str, grid_
         y_train
         )
     
-    print('train metrics')
+    print('**Train metrics**')
     print(f"mean_absolute_error: {metrics_train['mean_absolute_error']}")
     print(f"mean_squared_error: {metrics_train['mean_squared_error']}")
     print(f"root_mean_squared_error: {metrics_train['root_mean_squared_error']}")
-    print(f"r2_score: {metrics_train['r2_score']}")
-    print('\n')
+    print(f"r2_score: {metrics_train['r2_score']}", end='\n')
+
     
     metrics_val = evaluate_reg_model(model_reg, X_val, y_val)
     
-    print('Validation metrics')
+    print('**Validation metrics**')
     print(f"mean_absolute_error: {metrics_val['mean_absolute_error']}")
     print(f"mean_squared_error: {metrics_val['mean_squared_error']}")
     print(f"root_mean_squared_error: {metrics_val['root_mean_squared_error']}")
-    print(f"r2_score: {metrics_val['r2_score']}")
-    print('\n')
+    print(f"r2_score: {metrics_val['r2_score']}", end='\n')
     
     # Save Metrics
     file_path = os.path.join(
