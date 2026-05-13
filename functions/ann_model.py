@@ -4,7 +4,12 @@ from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 
 class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
-    """Scikit-learn compatible wrapper for a Keras binary classifier."""
+    """Wrapper compativel com scikit-learn para classificacao binaria com Keras.
+
+    A classe implementa a interface basica de estimadores do scikit-learn,
+    permitindo usar uma rede neural Keras em pipelines, validacao cruzada e
+    rotinas de busca de hiperparametros.
+    """
 
     def __init__(
         self,
@@ -16,25 +21,24 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
         batch_size=32,
         verbose=0
     ):
-        """Initialize the classifier hyperparameters.
+        """Inicializa os hiperparametros do classificador.
 
-        Parameters
-        ----------
-        input_dim : int
-            Number of input features expected by the first dense layer.
-        hidden_units : int, list, or tuple, default=(8, 8, 8)
-            Number of units in each hidden layer. An integer creates a single
-            hidden layer.
-        dropout_rate : float, default=0.1
-            Dropout rate applied after each hidden layer.
-        learning_rate : float, default=0.001
-            Learning rate used by the Adam optimizer.
-        epochs : int, default=30
-            Number of training epochs passed to ``model.fit``.
-        batch_size : int, default=32
-            Batch size passed to ``model.fit``.
-        verbose : int, default=0
-            Verbosity level passed to Keras training and prediction methods.
+        Args:
+            input_dim (int): Numero de atributos de entrada esperados pela
+                primeira camada densa.
+            hidden_units (int | list | tuple, optional): Quantidade de unidades
+                em cada camada oculta. Um inteiro cria uma unica camada oculta.
+                Padrao: `(8, 8, 8)`.
+            dropout_rate (float, optional): Taxa de dropout aplicada apos cada
+                camada oculta. Padrao: 0.1.
+            learning_rate (float, optional): Taxa de aprendizado usada pelo
+                otimizador Adam. Padrao: 0.001.
+            epochs (int, optional): Numero de epocas usado no `model.fit`.
+                Padrao: 30.
+            batch_size (int, optional): Tamanho do batch usado no `model.fit`.
+                Padrao: 32.
+            verbose (int, optional): Nivel de verbosidade passado aos metodos
+                de treino e predicao do Keras. Padrao: 0.
         """
         self.input_dim = input_dim
         self.hidden_units = hidden_units
@@ -46,12 +50,13 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
         self.model_ = None
 
     def _normalize_hidden_units(self):
-        """Return hidden layer sizes as a tuple.
+        """Normaliza a configuracao das camadas ocultas para uma tupla.
 
-        Raises
-        ------
-        TypeError
-            If ``hidden_units`` is not an integer, list, or tuple.
+        Returns:
+            tuple: Quantidade de unidades em cada camada oculta.
+
+        Raises:
+            TypeError: Se `hidden_units` nao for inteiro, lista ou tupla.
         """
         if isinstance(self.hidden_units, int):
             return (self.hidden_units,)
@@ -64,7 +69,12 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
         )
 
     def _build_model(self):
-        """Build and compile the underlying Keras sequential model."""
+        """Cria e compila o modelo sequencial Keras usado pelo classificador.
+
+        Returns:
+            tf.keras.Sequential: Modelo binario compilado com `binary_crossentropy`
+            e metrica de acuracia.
+        """
         hidden_units = self._normalize_hidden_units()
 
         model = tf.keras.Sequential()
@@ -95,19 +105,14 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
         return model
 
     def fit(self, X, y):
-        """Fit the neural network classifier.
+        """Treina o classificador neural.
 
-        Parameters
-        ----------
-        X : array-like
-            Training feature matrix.
-        y : array-like
-            Binary target values.
+        Args:
+            X (array-like): Matriz de atributos de treino.
+            y (array-like): Rotulos binarios do alvo.
 
-        Returns
-        -------
-        KerasBinaryClassifier
-            Fitted estimator instance.
+        Returns:
+            KerasBinaryClassifier: Instancia treinada do estimador.
         """
         self.model_ = self._build_model()
 
@@ -122,34 +127,27 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
-        """Predict binary class labels for the input samples.
+        """Prediz rotulos binarios para as amostras informadas.
 
-        Parameters
-        ----------
-        X : array-like
-            Feature matrix to predict.
+        Args:
+            X (array-like): Matriz de atributos usada na predicao.
 
-        Returns
-        -------
-        numpy.ndarray
-            One-dimensional array with predicted labels, using 0.5 as the
-            probability threshold.
+        Returns:
+            np.ndarray: Vetor unidimensional com classes previstas, usando 0.5
+            como limiar de probabilidade.
         """
         proba = self.model_.predict(X, verbose=0)
         return (proba > 0.5).astype(int).ravel()
 
     def predict_proba(self, X):
-        """Predict class probabilities for the input samples.
+        """Prediz probabilidades das classes para as amostras informadas.
 
-        Parameters
-        ----------
-        X : array-like
-            Feature matrix to predict.
+        Args:
+            X (array-like): Matriz de atributos usada na predicao.
 
-        Returns
-        -------
-        numpy.ndarray
-            Two-column array with probabilities for classes 0 and 1.
+        Returns:
+            np.ndarray: Matriz com duas colunas contendo as probabilidades das
+            classes 0 e 1, respectivamente.
         """
         proba = self.model_.predict(X, verbose=0)
         return np.hstack([1 - proba, proba])
@@ -157,7 +155,12 @@ class KerasBinaryClassifier(BaseEstimator, ClassifierMixin):
 
 
 class KerasRegressor(BaseEstimator, RegressorMixin):
-    """Scikit-learn compatible wrapper for a Keras regression model."""
+    """Wrapper compativel com scikit-learn para regressao com Keras.
+
+    A classe permite alternar entre um modelo linear simples e uma rede MLP
+    nao linear, mantendo a interface `fit` e `predict` esperada pelo
+    scikit-learn.
+    """
 
     def __init__(
         self,
@@ -170,29 +173,26 @@ class KerasRegressor(BaseEstimator, RegressorMixin):
         verbose=0,
         nonlinear=True  # True = rede neural não linear | False = regressão linear
     ):
-        """Initialize the regressor hyperparameters.
+        """Inicializa os hiperparametros do regressor.
 
-        Parameters
-        ----------
-        input_dim : int
-            Number of input features expected by the model.
-        hidden_units : int, list, or tuple, default=(64, 32)
-            Number of units in each hidden layer when ``nonlinear`` is True.
-            An integer creates a single hidden layer.
-        dropout_rate : float, default=0.1
-            Dropout rate applied after each hidden layer when ``nonlinear`` is
-            True.
-        learning_rate : float, default=0.001
-            Learning rate used by the Adam optimizer.
-        epochs : int, default=50
-            Number of training epochs passed to ``model.fit``.
-        batch_size : int, default=32
-            Batch size passed to ``model.fit``.
-        verbose : int, default=0
-            Verbosity level passed to Keras training and prediction methods.
-        nonlinear : bool, default=True
-            If True, builds a multilayer perceptron. If False, builds a single
-            linear output layer.
+        Args:
+            input_dim (int): Numero de atributos de entrada esperados pelo
+                modelo.
+            hidden_units (int | list | tuple, optional): Quantidade de unidades
+                em cada camada oculta quando `nonlinear=True`. Um inteiro cria
+                uma unica camada oculta. Padrao: `(64, 32)`.
+            dropout_rate (float, optional): Taxa de dropout aplicada apos cada
+                camada oculta quando `nonlinear=True`. Padrao: 0.1.
+            learning_rate (float, optional): Taxa de aprendizado usada pelo
+                otimizador Adam. Padrao: 0.001.
+            epochs (int, optional): Numero de epocas usado no `model.fit`.
+                Padrao: 50.
+            batch_size (int, optional): Tamanho do batch usado no `model.fit`.
+                Padrao: 32.
+            verbose (int, optional): Nivel de verbosidade passado aos metodos
+                de treino e predicao do Keras. Padrao: 0.
+            nonlinear (bool, optional): Se True, cria uma MLP; se False, cria
+                uma unica camada de saida linear. Padrao: True.
         """
         self.input_dim = input_dim
         self.hidden_units = hidden_units
@@ -205,12 +205,13 @@ class KerasRegressor(BaseEstimator, RegressorMixin):
         self.model_ = None
 
     def _normalize_hidden_units(self):
-        """Return hidden layer sizes as a tuple.
+        """Normaliza a configuracao das camadas ocultas para uma tupla.
 
-        Raises
-        ------
-        TypeError
-            If ``hidden_units`` is not an integer, list, or tuple.
+        Returns:
+            tuple: Quantidade de unidades em cada camada oculta.
+
+        Raises:
+            TypeError: Se `hidden_units` nao for inteiro, lista ou tupla.
         """
         if isinstance(self.hidden_units, int):
             return (self.hidden_units,)
@@ -223,7 +224,12 @@ class KerasRegressor(BaseEstimator, RegressorMixin):
         )
 
     def _build_model(self):
-        """Build and compile the underlying Keras regression model."""
+        """Cria e compila o modelo Keras usado pelo regressor.
+
+        Returns:
+            tf.keras.Sequential: Modelo de regressao compilado com perda `mse`
+            e metrica `mae`.
+        """
         model = tf.keras.Sequential()
 
         # =========================================================
@@ -286,19 +292,14 @@ class KerasRegressor(BaseEstimator, RegressorMixin):
         return model
 
     def fit(self, X, y):
-        """Fit the neural network regressor.
+        """Treina o regressor neural.
 
-        Parameters
-        ----------
-        X : array-like
-            Training feature matrix.
-        y : array-like
-            Continuous target values.
+        Args:
+            X (array-like): Matriz de atributos de treino.
+            y (array-like): Valores continuos do alvo.
 
-        Returns
-        -------
-        KerasRegressor
-            Fitted estimator instance.
+        Returns:
+            KerasRegressor: Instancia treinada do estimador.
         """
         self.model_ = self._build_model()
 
@@ -313,17 +314,17 @@ class KerasRegressor(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, X):
-        """Predict continuous target values for the input samples.
+        """Prediz valores continuos para as amostras informadas.
 
-        Parameters
-        ----------
-        X : array-like
-            Feature matrix to predict.
+        Args:
+            X (array-like): Matriz de atributos usada na predicao.
 
-        Returns
-        -------
-        numpy.ndarray
-            One-dimensional array with predicted target values.
+        Returns:
+            np.ndarray: Vetor unidimensional com os valores previstos.
         """
         preds = self.model_.predict(X, verbose=0)
         return preds.ravel()
+
+
+if __name__ == "__main__":
+   print("ann model carregado.")

@@ -1,9 +1,29 @@
+"""Funcoes para gerar analises simples de variaveis em datasets parquet.
+
+O modulo cria artefatos de analise exploratoria, como grafico de dados
+ausentes, cardinalidade das colunas e separacao entre variaveis categoricas e
+numericas.
+"""
+
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
 
 def MissingData(dataframe_path:str, plot_path:str) -> None:
+    """Gera um grafico com a proporcao de valores ausentes por coluna.
+
+    Le um arquivo parquet, calcula a media de valores nulos em cada coluna e
+    salva um grafico de barras chamado `missing_data.png` no diretorio
+    informado.
+
+    Args:
+        dataframe_path (str): Caminho do arquivo parquet a ser analisado.
+        plot_path (str): Diretorio onde o grafico sera salvo.
+
+    Returns:
+        None.
+    """
     
     df = pd.read_parquet(dataframe_path)       
    
@@ -21,6 +41,19 @@ def MissingData(dataframe_path:str, plot_path:str) -> None:
     plt.close() 
     
 def CardinalityAnalysis(dataframe_path:str, report_path:str) -> None:
+    """Calcula a cardinalidade de cada coluna e salva o resultado em JSONL.
+
+    A cardinalidade corresponde ao numero de valores unicos encontrados em cada
+    coluna do dataframe. O resultado e salvo em `cardinality.jsonl` no diretorio
+    informado.
+
+    Args:
+        dataframe_path (str): Caminho do arquivo parquet a ser analisado.
+        report_path (str): Diretorio onde o relatorio JSONL sera salvo.
+
+    Returns:
+        None.
+    """
     
     df = pd.read_parquet(dataframe_path)    
        
@@ -44,6 +77,19 @@ def CardinalityAnalysis(dataframe_path:str, report_path:str) -> None:
         lines=True)
     
 def ColsTypeAnalysis(dataframe_path:str, report_path:str) -> None:
+    """Identifica colunas categoricas e numericas e salva o relatorio.
+
+    Classifica como categoricas as colunas dos tipos `category`, `object` e
+    `bool`; classifica como numericas as colunas com dtype numerico. O resultado
+    e salvo em `variable_type.jsonl` no diretorio informado.
+
+    Args:
+        dataframe_path (str): Caminho do arquivo parquet a ser analisado.
+        report_path (str): Diretorio onde o relatorio JSONL sera salvo.
+
+    Returns:
+        None.
+    """
     
     df = pd.read_parquet(dataframe_path)
     

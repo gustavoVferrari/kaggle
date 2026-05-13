@@ -1,9 +1,9 @@
-"""Utility for running stratified K-fold cross-validation on a configured model.
+"""Funcoes auxiliares para validacao cruzada de modelos.
 
-Fits the provided estimator with supplied hyperparameters using stratified folds,
-and returns per-fold accuracy along with model metadata and a timestamp. Other
-per-fold outputs (predictions, probabilities) are kept in-memory for potential
-downstream analysis but only accuracy is persisted.
+Este modulo concentra rotinas de K-Fold e Stratified K-Fold para estimadores
+compativeis com scikit-learn. As funcoes retornam os resultados por fold em
+formato tabular, incluindo metricas de treino/validacao quando disponiveis,
+nome do modelo, tipo de experimento, metrica usada e timestamp da execucao.
 """
 
 import pandas as pd
@@ -20,24 +20,32 @@ def cross_validate_stratified_gs(
     n_splits: int = 5,
     random_state: int = 23,
 ):
-    """Perform stratified K-fold CV and return per-fold accuracy scores.
+    """Executa validacao cruzada estratificada com parametros otimizados.
+
+    Aplica os hiperparametros informados ao estimador em `model_config`,
+    treina um pipeline simples em cada fold estratificado e calcula a acuracia
+    no conjunto de validacao correspondente. Predicoes e probabilidades sao
+    calculadas durante o loop, mas apenas a acuracia por fold e retornada.
 
     Args:
-        X_train (pd.DataFrame): Feature matrix for training.
-        y_train (pd.DataFrame): Target labels aligned with `X_train`.
-        model_config (dict): Configuration containing at least:
-            - `model`: sklearn-compatible estimator with `fit/predict/predict_proba`.
-            - `model_name`: human-readable identifier for the model.
-        best_model_params (dict): Hyperparameters to apply via `set_params` before fitting.
-        n_splits (int, optional): Number of stratified folds. Defaults to 5.
-        random_state (int, optional): Seed for reproducible shuffling. Defaults to 23.
+        X_train (pd.DataFrame): Matriz de atributos usada no treino.
+        y_train (pd.DataFrame): Vetor ou matriz de rotulos alinhado a `X_train`.
+        model_config (dict): Configuracao do modelo. Deve conter as chaves
+            `model`, com um estimador compativel com scikit-learn, e
+            `model_name`, com o nome usado no resultado.
+        best_model_params (dict): Hiperparametros aplicados ao modelo via
+            `set_params` antes da validacao cruzada.
+        n_splits (int, optional): Numero de folds estratificados. Padrao: 5.
+        random_state (int, optional): Semente usada no embaralhamento dos
+            folds. Padrao: 23.
 
     Returns:
-        pd.DataFrame: DataFrame with columns `fold`, `accuracy`, `model`, `timestamp`
-        summarizing accuracy per fold and metadata.
+        pd.DataFrame: Resultado por fold com acuracia, metrica usada, tipo de
+        modelo, nome do modelo e timestamp da execucao.
 
     Side Effects:
-        Mutates `model_config['model']` by applying `best_model_params` with `set_params`.
+        Altera `model_config["model"]` ao aplicar `best_model_params` com
+        `set_params`.
     """
 
     model = model_config['model']
@@ -101,20 +109,28 @@ def cross_validate_kfold(
     n_splits:int=5, 
     model_type:str='single_model',
     shuffle:bool=True):
-    """Run basic K-Fold CV and return per-fold train/test scores.
+    """Executa validacao cruzada com K-Fold e consolida os scores por fold.
+
+    Usa `sklearn.model_selection.cross_validate` para calcular scores de treino
+    e validacao em folds nao estratificados.
 
     Args:
-        X_train (pd.DataFrame): Feature matrix used in cross-validation.
-        y_train (pd.DataFrame): Target labels aligned with `X_train` rows.
-        model: Sklearn-compatible estimator exposing `fit` and `score`.
-        scoring (str, optional): Scoring metric name understood by
-            `sklearn.model_selection.cross_validate`. Defaults to ``'accuracy'``.
-        n_splits (int, optional): Number of folds. Defaults to 5.
-        shuffle (bool, optional): Whether to shuffle before splitting. Defaults to True.
+        X_train (pd.DataFrame): Matriz de atributos usada na validacao cruzada.
+        y_train (pd.DataFrame): Vetor ou matriz de rotulos alinhado a `X_train`.
+        model: Estimador compativel com scikit-learn.
+        model_config (dict): Configuracao contendo `model_name`, usado para
+            identificar o modelo no resultado.
+        score (str): Nome da metrica aceita por
+            `sklearn.model_selection.cross_validate`.
+        n_splits (int, optional): Numero de folds. Padrao: 5.
+        model_type (str, optional): Rotulo do tipo de experimento registrado no
+            resultado. Padrao: `"single_model"`.
+        shuffle (bool, optional): Indica se os dados devem ser embaralhados
+            antes da divisao em folds. Padrao: True.
 
     Returns:
-        dict: Keys ``train_score`` and ``test_score`` containing arrays of per-fold
-            scores produced by ``cross_validate``.
+        pd.DataFrame: Resultado por fold com `train_score`, `val_score`,
+        metrica usada, tipo de modelo, nome do modelo e timestamp da execucao.
     """
     
     # kfolds cv
@@ -157,20 +173,29 @@ def cross_validate_StratifiedKFold(
     n_splits:int=5, 
     model_type:str='single_model',
     shuffle:bool=True):
-    """Run basic StratifiedKFold CV and return per-fold train/test scores.
+    """Executa validacao cruzada estratificada e consolida os scores por fold.
+
+    Usa `StratifiedKFold` para preservar a proporcao das classes em cada fold e
+    `sklearn.model_selection.cross_validate` para calcular os scores de treino
+    e validacao.
 
     Args:
-        X_train (pd.DataFrame): Feature matrix used in cross-validation.
-        y_train (pd.DataFrame): Target labels aligned with `X_train` rows.
-        model: Sklearn-compatible estimator exposing `fit` and `score`.
-        scoring (str, optional): Scoring metric name understood by
-            `sklearn.model_selection.cross_validate`. Defaults to ``'accuracy'``.
-        n_splits (int, optional): Number of folds. Defaults to 5.
-        shuffle (bool, optional): Whether to shuffle before splitting. Defaults to True.
+        X_train (pd.DataFrame): Matriz de atributos usada na validacao cruzada.
+        y_train (pd.DataFrame): Vetor ou matriz de rotulos alinhado a `X_train`.
+        model_clf: Estimador classificador compativel com scikit-learn.
+        model_config (dict): Configuracao contendo `model_name`, usado para
+            identificar o modelo no resultado.
+        scoring (str): Nome da metrica aceita por
+            `sklearn.model_selection.cross_validate`.
+        n_splits (int, optional): Numero de folds estratificados. Padrao: 5.
+        model_type (str, optional): Rotulo do tipo de experimento registrado no
+            resultado. Padrao: `"single_model"`.
+        shuffle (bool, optional): Indica se os dados devem ser embaralhados
+            antes da divisao em folds. Padrao: True.
 
     Returns:
-        dict: Keys ``train_score`` and ``test_score`` containing arrays of per-fold
-            scores produced by ``cross_validate``.
+        pd.DataFrame: Resultado por fold com `train_score`, `val_score`,
+        metrica usada, tipo de modelo, nome do modelo e timestamp da execucao.
     """
     
     # kfolds cv

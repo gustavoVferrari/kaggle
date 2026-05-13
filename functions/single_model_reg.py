@@ -1,3 +1,10 @@
+"""Configuracoes de modelos individuais para regressao.
+
+O modulo define fabricas de configuracao para regressores scikit-learn, XGBoost
+e LightGBM. Cada funcao retorna um dicionario com o estimador, nome do modelo e,
+quando disponivel, grades/distribuicoes de hiperparametros para busca.
+"""
+
 from sklearn.linear_model import Ridge
 from sklearn.svm import SVR
 from sklearn.ensemble import (
@@ -14,12 +21,38 @@ from scipy.stats import randint, uniform, loguniform
 
 
 def _prefix_params(step_name, params):
+    """Adiciona o prefixo de pipeline aos parametros de busca.
+
+    Args:
+        step_name (str): Nome do passo do pipeline usado como prefixo.
+        params (dict | list): Grade ou lista de grades de parametros.
+
+    Returns:
+        dict | list: Parametros com chaves no formato
+        `<step_name>__<parametro>`.
+    """
     if isinstance(params, list):
         return [{f"{step_name}__{k}": v for k, v in grid.items()} for grid in params]
     return {f"{step_name}__{k}": v for k, v in params.items()}
 
 
 def _build_config(model, model_name, param_grid=None, param_distributions=None, step_name=None):
+    """Monta o dicionario padrao de configuracao de um regressor.
+
+    Args:
+        model: Estimador de regressao.
+        model_name (str): Nome usado para identificar o modelo.
+        param_grid (dict | list, optional): Grade de parametros para
+            `GridSearchCV`. Padrao: None.
+        param_distributions (dict | list, optional): Distribuicoes de
+            parametros para `RandomizedSearchCV`. Padrao: None.
+        step_name (str, optional): Nome do passo usado ao criar `models_gs`.
+            Quando omitido, usa o nome da classe do modelo em minusculo.
+
+    Returns:
+        dict: Configuracao do modelo com `model`, `model_name` e, quando
+        informados, `param_grid`, `param_distributions` e `models_gs`.
+    """
     step_name = step_name or model.__class__.__name__.lower()
     config = {
         "model": model,
@@ -42,7 +75,12 @@ def _build_config(model, model_name, param_grid=None, param_distributions=None, 
 
 
 def apply_lightGBM_regressor():
-    """Apply LGBMRegressor model configuration."""
+    """Retorna a configuracao do regressor LightGBM.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = LGBMRegressor(random_state=23)
     param_grid = {
         "n_estimators": [100, 200, 400],
@@ -51,7 +89,6 @@ def apply_lightGBM_regressor():
         "max_depth": [-1, 5, 10],
         "min_child_samples": [10, 20, 30],
         "subsample": [0.6, 0.8, 1.0],
-        # "colsample_bytree": [0.6, 0.8, 1.0],
         "reg_alpha": [0.0, 0.1, 1.0],
         "reg_lambda": [0.0, 0.1, 1.0],
     }
@@ -75,7 +112,12 @@ def apply_lightGBM_regressor():
 
 
 def apply_XGB_regressor():
-    """Apply XGBRegressor model configuration."""
+    """Retorna a configuracao do regressor XGBoost.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = XGBRegressor(
         random_state=23,
         objective="reg:squarederror",
@@ -108,7 +150,12 @@ def apply_XGB_regressor():
 
 
 def apply_svm_regressor():
-    """Apply SVR model configuration."""
+    """Retorna a configuracao do regressor SVR.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = SVR()
     param_grid = [
         {
@@ -145,7 +192,12 @@ def apply_svm_regressor():
 
 
 def apply_knn_regressor():
-    """Apply KNeighborsRegressor model configuration."""
+    """Retorna a configuracao do regressor KNeighborsRegressor.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = KNeighborsRegressor()
     param_grid = {
         "n_neighbors": [3, 5, 7, 9, 11, 13],
@@ -168,7 +220,12 @@ def apply_knn_regressor():
 
 
 def apply_ridge_regression():
-    """Apply Ridge regression model configuration."""
+    """Retorna a configuracao do regressor Ridge.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = Ridge(random_state=23)
     param_grid = {
         "alpha": [0.1, 1.0, 10.0, 100.0],
@@ -189,7 +246,12 @@ def apply_ridge_regression():
 
 
 def apply_random_forest():
-    """Apply RandomForestRegressor model configuration."""
+    """Retorna a configuracao do regressor RandomForest.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = RandomForestRegressor(random_state=23)
     param_grid = {
         "n_estimators": [300, 400, 500],
@@ -218,7 +280,12 @@ def apply_random_forest():
 
 
 def apply_mlp():
-    """Apply MLPRegressor model configuration."""
+    """Retorna a configuracao do regressor MLPRegressor.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = MLPRegressor(random_state=23, max_iter=1000, early_stopping=True)
     param_grid = {
         "hidden_layer_sizes": [(10,), (20,), (50,), (10, 5), (20, 10)],
@@ -241,7 +308,12 @@ def apply_mlp():
 
 
 def apply_adaboost():
-    """Apply AdaBoostRegressor model configuration."""
+    """Retorna a configuracao do regressor AdaBoost.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = AdaBoostRegressor(random_state=23)
     param_grid = {
         "n_estimators": [50, 100, 200, 300],
@@ -262,7 +334,12 @@ def apply_adaboost():
 
 
 def apply_gradboost():
-    """Apply GradientBoostingRegressor model configuration."""
+    """Retorna a configuracao do regressor GradientBoosting.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = GradientBoostingRegressor(random_state=23)
     param_grid = {
         "n_estimators": [100, 150, 200, 250],
@@ -287,7 +364,12 @@ def apply_gradboost():
 
 
 def apply_hist_gradboost():
-    """Apply HistGradientBoostingRegressor model configuration."""
+    """Retorna a configuracao do regressor HistGradientBoosting.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
     model = HistGradientBoostingRegressor(random_state=23)
     param_grid = {
         "learning_rate": [0.01, 0.05, 0.1],
@@ -314,7 +396,15 @@ def apply_hist_gradboost():
 
 
 class SingleModelOrchestrator:
+    """Orquestra a criacao de configuracoes de regressores individuais."""
+
     def __init__(self, seed_=23):
+        """Inicializa o mapa de modelos de regressao disponiveis.
+
+        Args:
+            seed_ (int, optional): Semente armazenada no orquestrador para
+                compatibilidade com chamadas externas. Padrao: 23.
+        """
         self.seed_ = seed_
         self.methods = {
             "RidgeRegressor": apply_ridge_regression,
@@ -333,15 +423,19 @@ class SingleModelOrchestrator:
         self.model_methods = list(self.methods.keys())
 
     def apply(self, method_name, **kwargs):
-        """
-        Retorna a configuracao do modelo escolhido.
+        """Retorna a configuracao do modelo escolhido.
 
         Args:
-            method_name (str): O nome do modelo a ser aplicado.
-            **kwargs: parametros adicionais.
+            method_name (str): Nome do modelo a ser configurado.
+            **kwargs: Argumentos adicionais reservados para compatibilidade.
 
         Returns:
-            dict: Dicionario contendo models_gs, model e model_name.
+            dict: Configuracao do modelo, contendo ao menos `model` e
+            `model_name`.
+
+        Raises:
+            ValueError: Se `method_name` nao estiver registrado no
+            orquestrador.
         """
         if method_name not in self.methods:
             raise ValueError(
@@ -353,4 +447,4 @@ class SingleModelOrchestrator:
 
 
 if __name__ == "__main__":
-    print("Single model regression loaded")
+    print("Single Model Regression carregado.")
