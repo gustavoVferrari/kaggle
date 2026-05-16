@@ -1,5 +1,6 @@
 ﻿import yaml
 import pandas as pd
+import numpy as np
 import os
 import sys
 from datetime import datetime
@@ -189,6 +190,8 @@ def main_single_model_lite(
     
     # 7. Make predict 
     predictions = make_prediction_reg(model_reg, X_val)
+    predictions['prediction'] = predictions['prediction'].apply(np.expm1)
+   
         
     path_data = os.path.join(
         config['init_path'],
@@ -201,7 +204,7 @@ def main_single_model_lite(
 if __name__ == "__main__":
     main_single_model_lite(
         pipeline_name="pipeline1", 
-        model_name="RandomForestRegressor",
+        model_name="LGBMRegressor",
         scoring="neg_mean_absolute_percentage_error",
         grid_search_method='randomized_grid_search'
         )
