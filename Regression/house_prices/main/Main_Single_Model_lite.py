@@ -204,7 +204,7 @@ def main_single_model_lite(
 if __name__ == "__main__":
     main_single_model_lite(
         pipeline_name="pipeline1", 
-        model_name="LGBMRegressor",
+        model_name="KernelRidgeRegressor",
         scoring="neg_mean_absolute_percentage_error",
         grid_search_method='randomized_grid_search'
         )

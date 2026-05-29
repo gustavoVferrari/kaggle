@@ -165,7 +165,7 @@ class KerasRegressor(BaseEstimator, RegressorMixin):
     def __init__(
         self,
         input_dim,
-        hidden_units=(64, 32),
+        hidden_units=(32, 16),
         dropout_rate=0.1,
         learning_rate=0.001,
         epochs=50,

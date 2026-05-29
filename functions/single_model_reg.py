@@ -6,6 +6,7 @@ quando disponivel, grades/distribuicoes de hiperparametros para busca.
 """
 
 from sklearn.linear_model import Ridge
+from sklearn.kernel_ridge import KernelRidge
 from sklearn.svm import SVR
 from sklearn.ensemble import (
     RandomForestRegressor,
@@ -245,6 +246,58 @@ def apply_ridge_regression():
     )
 
 
+def apply_kernel_ridge_regression():
+    """Retorna a configuracao do regressor KernelRidge.
+
+    Returns:
+        dict: Configuracao contendo estimador, nome, grade e distribuicoes de
+        hiperparametros.
+    """
+    model = KernelRidge()
+    param_grid = [
+        {
+            "kernel": ["linear"],
+            "alpha": [0.1, 1.0, 10.0, 100.0],
+        },
+        {
+            "kernel": ["rbf"],
+            "alpha": [0.1, 1.0, 10.0, 100.0],
+            "gamma": [0.001, 0.01, 0.1, 1.0],
+        },
+        {
+            "kernel": ["polynomial"],
+            "alpha": [0.1, 1.0, 10.0, 100.0],
+            "gamma": [0.001, 0.01, 0.1],
+            "degree": [2, 3, 4],
+            "coef0": [0.0, 1.0],
+        },
+    ]
+    param_distributions = [
+        {
+            "kernel": ["linear"],
+            "alpha": loguniform(1e-3, 1e3),
+        },
+        {
+            "kernel": ["rbf"],
+            "alpha": loguniform(1e-3, 1e3),
+            "gamma": loguniform(1e-4, 1.0),
+        },
+        {
+            "kernel": ["polynomial"],
+            "alpha": loguniform(1e-3, 1e3),
+            "gamma": loguniform(1e-4, 1.0),
+            "degree": randint(2, 5),
+            "coef0": uniform(0.0, 2.0),
+        },
+    ]
+    return _build_config(
+        model=model,
+        model_name="KernelRidgeRegressor",
+        param_grid=param_grid,
+        param_distributions=param_distributions,
+    )
+
+
 def apply_random_forest():
     """Retorna a configuracao do regressor RandomForest.
 
@@ -408,6 +461,7 @@ class SingleModelOrchestrator:
         self.seed_ = seed_
         self.methods = {
             "RidgeRegressor": apply_ridge_regression,
+            "KernelRidgeRegressor": apply_kernel_ridge_regression,
             "KNeighborsRegressor": apply_knn_regressor,
             "SVRRegressor": apply_svm_regressor,
             "RandomForestRegressor": apply_random_forest,

@@ -72,5 +72,5 @@ def main_submission(pipeline_name: str, model_name: str):
 if __name__ == "__main__":
     main_submission(
         pipeline_name="pipeline1",
-        model_name="RandomForestRegressor"
+        model_name="KernelRidgeRegressor"
         )

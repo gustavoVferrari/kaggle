@@ -1,6 +1,7 @@
 from xml.parsers.expat import model
 import yaml
 import pandas as pd
+import numpy as np
 import os
 import sys
 from datetime import datetime
@@ -15,7 +16,7 @@ from functions.evaluate_model import evaluate_reg_model, MetricsOrchestrator
 from functions.predict_model import make_prediction_reg
 from functions.ann_model import KerasRegressor
 
-def main_ann_model_lite(pipeline_name: str, model_name:str):
+def main_ann_model_lite(pipeline_name: str, model_name:str, drop_columns:bool=True):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
@@ -60,22 +61,27 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
             f"y_val_feat_eng_{pipeline_name}.parquet")
    )
 
-    #2.  Drop columns
-    # X_train.drop(
-    #     columns=config_model['ann_model']['cols_2_drop'],
-    #     inplace=True)
-    
-    # X_val.drop(
-    #     columns=config_model['ann_model']['cols_2_drop'],
-    #     inplace=True)   
+    if drop_columns == True:
+    # 2.  Drop columns
+        X_train.drop(
+            columns=config_model['ann_model']['cols_2_drop'],
+            inplace=True)
+        
+        X_val.drop(
+            columns=config_model['ann_model']['cols_2_drop'],
+            inplace=True)   
+    else:
+        pass
 
 
     # 3. Model Selection 
     model = KerasRegressor(
         input_dim=X_train.shape[1], 
-        hidden_units=(32, 16),
+        hidden_units=(50, 50, 50),
         nonlinear=True,
-        epochs=100)    
+        learning_rate=0.01,
+        dropout_rate=0.0001,
+        epochs=300)    
     
       
     model_info = [{
@@ -100,10 +106,10 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
         mode='append')
         
     # 4. train model
-    clf = model.fit(X_train, y_train)             
+    model_reg = model.fit(X_train, y_train)             
     
     # 5. Evaulate model
-    metrics_train = evaluate_reg_model(clf, X_train, y_train)
+    metrics_train = evaluate_reg_model(model_reg, X_train, y_train)
     
     print('**Train metrics**')
     print(f"mean_absolute_error: {metrics_train['mean_absolute_error']}")
@@ -112,7 +118,7 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
     print(f"r2_score: {metrics_train['r2_score']}", end="\n")
 
     
-    metrics_val = evaluate_reg_model(clf, X_val, y_val)
+    metrics_val = evaluate_reg_model(model_reg, X_val, y_val)
     
     print('**Validation metrics**')
     print(f"mean_absolute_error: {metrics_val['mean_absolute_error']}")
@@ -134,20 +140,24 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
         config['init_path'],
         config['ann_model']['h5'],
         f'ann_model_{pipeline_name}.h5')     
-    save_model(clf, path_model)
+    save_model(model_reg, path_model)
     
     # 7. Make predict 
     predictions = make_prediction_reg(model, X_val)
+    predictions['prediction'] = predictions['prediction'].apply(np.expm1)
         
     path_data = os.path.join(
         config['init_path'],
-        config['single_model']['predicts'])    
-    model_name = model_info['model']
+        config['ann_model']['predicts'])    
     
-    save_data(path_data, f"X_val_pred_{model_name}", predictions)     
+    save_data(path_data, f"X_val_pred_{model_info[0]['model']}", predictions)     
   
    
    
    
 if __name__ == "__main__":
-    main_ann_model_lite(pipeline_name='pipeline1', model_name='ANN')
+    main_ann_model_lite(
+        pipeline_name='pipeline1',
+        model_name='ANN', 
+        drop_columns=False
+        )
