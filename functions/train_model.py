@@ -104,6 +104,19 @@ def train_voting_model_clf(
     if models is None:
         models = voting_clf_models(model_names=model_names)
 
+    # Normalize `models` input: accept dict, list of names, or list of (name, estimator)
+    if isinstance(models, (list, tuple, set)):
+        # list of model names or list of (name, estimator)
+        # If elements are 2-tuples, convert to dict of estimators
+        if all(isinstance(m, (list, tuple)) and len(m) == 2 for m in models):
+            models = {name: est for name, est in models}
+        else:
+            # assume list of model names -> build dict via helper
+            models = voting_clf_models(model_names=list(models))
+
+    if not hasattr(models, "items"):
+        raise TypeError("`models` must be a dict (name->estimator), a list of model names, or a list of (name, estimator) tuples")
+
     estimators = []
     for model_name, model in models.items():
         model_params = best_models_params.get(model_name, {})
@@ -191,6 +204,16 @@ def train_voting_model_reg(
 
     if models is None:
         models = voting_reg_models(model_names=model_names)
+
+    # Normalize `models` input: accept dict, list of names, or list of (name, estimator)
+    if isinstance(models, (list, tuple, set)):
+        if all(isinstance(m, (list, tuple)) and len(m) == 2 for m in models):
+            models = {name: est for name, est in models}
+        else:
+            models = voting_reg_models(model_names=list(models))
+
+    if not hasattr(models, "items"):
+        raise TypeError("`models` must be a dict (name->estimator), a list of model names, or a list of (name, estimator) tuples")
 
     estimators = []
     for model_name, model in models.items():

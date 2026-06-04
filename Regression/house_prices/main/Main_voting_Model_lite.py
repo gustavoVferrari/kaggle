@@ -196,13 +196,8 @@ def main_voting_model_lite(
 if __name__ == "__main__":
     
     models_list = [
-        "RidgeRegressor",
-        "SVRRegressor",
+        "RidgeRegressor",  
         "RandomForestRegressor",
-        "MLPRegressor",
-        "HistGradientBoostingRegressor",
-        "XGBRegressor",
-        "LGBMRegressor" 
         ]
     main_voting_model_lite(
         pipeline_name="pipeline1",

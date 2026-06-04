@@ -11,7 +11,7 @@ sys.path.insert(0, project_root)
 
 
 
-def main_submission(pipeline_name: str, model_name: str):
+def main_submission(pipeline_name: str):
     
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
@@ -51,8 +51,8 @@ def main_submission(pipeline_name: str, model_name: str):
     
     model_path = os.path.join(
            config['init_path'],
-           config['single_model']['pkl'],
-            f"{model_name}_{pipeline_name}.pkl")
+           config['voting']['pkl'],
+            f"voting_{pipeline_name}.pkl")
     # open model    
     with open(model_path, "rb") as file:
         model = pickle.load(file)
@@ -64,13 +64,12 @@ def main_submission(pipeline_name: str, model_name: str):
         os.path.join(
            config['init_path'],
            config['data']['submission'],
-            f'submission_{model_name}_{pipeline_name}.csv'),
+            f'submission_voting_model_{pipeline_name}.csv'),
         index=False)
     
     print("dados salvos com sucesso")
     
 if __name__ == "__main__":
     main_submission(
-        pipeline_name="pipeline1",
-        model_name="RandomForestRegressor"
+        pipeline_name="pipeline1"
         )
