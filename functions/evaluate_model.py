@@ -15,6 +15,7 @@ from sklearn.metrics import (
     f1_score,
     mean_absolute_error,
     mean_squared_error,
+    root_mean_squared_error,
     r2_score,
     roc_auc_score
 )
@@ -73,7 +74,7 @@ def evaluate_reg_model(model, X_test, y_test):
 
     metrics['mean_absolute_error'] = mean_absolute_error(y_test, pred)
     metrics['mean_squared_error'] = mean_squared_error(y_test, pred)
-    metrics['root_mean_squared_error'] = np.sqrt(mean_squared_error(y_test, pred))
+    metrics['root_mean_squared_error'] = root_mean_squared_error(y_test, pred)
     metrics['r2_score'] = r2_score(y_test, pred)
 
     return metrics
