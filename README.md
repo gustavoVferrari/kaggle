@@ -80,12 +80,22 @@ Importante: antes de baixar dados de uma competicao, aceite as regras da competi
 
 ## Configuracao de caminhos
 
-Cada competicao possui arquivos YAML em `config/`. O arquivo `config.yaml` define `init_path` com caminho absoluto, por exemplo:
+Cada competicao possui arquivos YAML em `config/`. O arquivo `config.yaml` define `init_path` com caminho relativo a raiz do repositorio, por exemplo:
 
 - `Classification/Titanic/config/config.yaml`
 - `Regression/house_prices/config/config.yaml`
 
-Se voce clonar ou mover o projeto para outro diretorio, atualize o valor de `init_path` antes de executar os scripts.
+Valores recomendados:
+
+```yaml
+init_path: "Classification/Titanic"
+```
+
+```yaml
+init_path: "Regression/house_prices"
+```
+
+Os scripts resolvem esse caminho relativo automaticamente a partir da raiz do repositorio. Caminhos absolutos ainda funcionam, mas dificultam execucao em outro computador ou em CI/CD.
 
 ## Como executar o pipeline Titanic
 

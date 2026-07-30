@@ -6,8 +6,10 @@ from sklearn.pipeline import Pipeline
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, "../../"))
+project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
+
+from functions.config import resolve_init_path
 
 from utils.utils import to_jsonl
 from functions.make_dataset import split_data, save_data
@@ -23,15 +25,16 @@ from functions.cross_validate import cross_validate
 def main_single_model():
     
     # 1. Carregar configurações
-    with open(os.path.join(project_root, "Titanic/config/config.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
+        config = resolve_init_path(config, project_root)
     
     # pipeline selection    
-    with open(os.path.join(project_root, "Titanic/config/pipeline.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)
     
     # model selection    
-    with open(os.path.join(project_root, "Titanic/config/model.yaml"), "r") as f:
+    with open(os.path.join(project_root, "Classification/Titanic/config/model.yaml"), "r") as f:
         config_model = yaml.safe_load(f)
 
     print("Iniciando pipeline de Machine Learning...")

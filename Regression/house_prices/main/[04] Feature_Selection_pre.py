@@ -7,6 +7,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
+from functions.config import resolve_init_path
+
 from functions.feature_selection import FeatureSelectionOrchestrator
 from Regression.house_prices.src.features.feat_eng_pipeline import PreprocessingOrchestrator
 from utils.plots import Pearson_correlation, Bar_plot
@@ -16,6 +18,7 @@ def Main_Feature_Selection():
         # 1. Carregar configurações
     with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
+        config = resolve_init_path(config, project_root)
         
     with open(os.path.join(project_root, "Regression/house_prices/config/pipeline.yaml"), "r") as f:
         config_pipe = yaml.safe_load(f)  

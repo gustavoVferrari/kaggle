@@ -6,6 +6,8 @@ import yaml
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
+
+from functions.config import resolve_init_path
 from utils.utils import to_jsonl
 from utils.plots import separation_plan_plot, cross_validation_plot
 from functions.make_dataset import save_data
@@ -23,6 +25,7 @@ def main_voting_model_lite(pipeline_name:str, scoring:str):
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
+        config = resolve_init_path(config, project_root)
     
     # pipeline selection    
     with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:

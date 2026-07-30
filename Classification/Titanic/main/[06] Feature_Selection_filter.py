@@ -7,6 +7,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
+from functions.config import resolve_init_path
+
 from functions.feature_selection import FeatureSelectionOrchestrator
 from utils.plots import Pearson_correlation, Bar_plot
 from utils.utils import to_jsonl
@@ -17,6 +19,7 @@ def Main_Feature_Selection(pipeline_name: str):
         # 1. Carregar configurações
     with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)        
+        config = resolve_init_path(config, project_root)
   
     # 1. load dataset    
     X_train = pd.read_parquet(

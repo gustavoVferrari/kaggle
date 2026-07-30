@@ -7,6 +7,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
+from functions.config import resolve_init_path
+
 from functions.train_model import train_voting_model
 from functions.evaluate_model import evaluate_clf_model, MetricsOrchestrator
 from functions.voting_model_clf import voting_model, models
@@ -17,6 +19,7 @@ def main_voting_model_undersamplig(pipeline_name: str, scoring:str):
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
+        config = resolve_init_path(config, project_root)
     
     # pipeline selection    
     with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:

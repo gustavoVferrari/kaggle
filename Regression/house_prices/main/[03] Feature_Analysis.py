@@ -5,10 +5,13 @@ import yaml
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
+
+from functions.config import resolve_init_path
 print(project_root)
 
 with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
+        config = resolve_init_path(config, project_root)
 
 
 from functions.feature_analysis import (

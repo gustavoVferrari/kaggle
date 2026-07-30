@@ -6,6 +6,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../../.."))
 sys.path.insert(0, project_root)
 
+from functions.config import resolve_init_path
+
 
 def load_config(load_all: list = None):
     if load_all is None:
@@ -30,7 +32,10 @@ def load_config(load_all: list = None):
             config_files[config_name],
         )
         with open(config_path, "r") as f:
-            loaded_configs.append(yaml.safe_load(f))
+            config = yaml.safe_load(f)
+            if config_name == 'config':
+                config = resolve_init_path(config, project_root)
+            loaded_configs.append(config)
 
     if len(loaded_configs) == 1:
         return loaded_configs[0]

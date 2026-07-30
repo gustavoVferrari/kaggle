@@ -8,6 +8,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
+from functions.config import resolve_init_path
+
 from functions.make_dataset import save_data
 from utils.plots import separation_plan_plot
 from utils.utils import to_jsonl
@@ -21,6 +23,7 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
     # 1. Carregar configurações
     with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
         config = yaml.safe_load(f)
+        config = resolve_init_path(config, project_root)
     
     # pipeline selection    
     with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:
@@ -63,11 +66,11 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
 
     #2.  Drop columns
     X_train.drop(
-        columns=config_model['ann_model']['cols_2_drop'],
+        columns=config_model['ann_model']['cols_2_drop'][pipeline_name],
         inplace=True)
     
     X_val.drop(
-        columns=config_model['ann_model']['cols_2_drop'],
+        columns=config_model['ann_model']['cols_2_drop'][pipeline_name],
         inplace=True)   
 
 
@@ -163,4 +166,7 @@ def main_ann_model_lite(pipeline_name: str, model_name:str):
    
    
 if __name__ == "__main__":
-    main_ann_model_lite(pipeline_name='Pipeline3', model_name='ANN')
+    main_ann_model_lite(
+        pipeline_name='Pipeline3', 
+        model_name='ANN'
+        )
