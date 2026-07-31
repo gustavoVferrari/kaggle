@@ -4,6 +4,7 @@ import numpy as np
 import os
 import sys
 import pickle
+import logging
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
@@ -11,22 +12,28 @@ sys.path.insert(0, project_root)
 
 from functions.config import resolve_init_path
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
-
-def main_submission(pipeline_name: str):
+from Regression.house_prices.src.utils.config import load_config
+ 
+def main_submission(pipeline_name: str, config:dict, config_pipe:dict):
     
-    # 1. Carregar configurações
-    with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
-        config = yaml.safe_load(f)
-        config = resolve_init_path(config, project_root)
+    # # 1. Carregar configurações
+    # with open(os.path.join(project_root, "Regression/house_prices/config/config.yaml"), "r") as f:
+    #     config = yaml.safe_load(f)
+    #     config = resolve_init_path(config, project_root)
     
-    # pipeline selection    
-    with open(os.path.join(project_root, "Regression/house_prices/config/pipeline.yaml"), "r") as f:
-        config_pipe = yaml.safe_load(f)
+    # # pipeline selection    
+    # with open(os.path.join(project_root, "Regression/house_prices/config/pipeline.yaml"), "r") as f:
+    #     config_pipe = yaml.safe_load(f)
     
-    # model selection    
-    with open(os.path.join(project_root, "Regression/house_prices/config/model.yaml"), "r") as f:
-        config_model = yaml.safe_load(f)
+    # # model selection    
+    # with open(os.path.join(project_root, "Regression/house_prices/config/model.yaml"), "r") as f:
+    #     config_model = yaml.safe_load(f)
 
     
     
@@ -72,7 +79,20 @@ def main_submission(pipeline_name: str):
     
     print("dados salvos com sucesso")
     
-if __name__ == "__main__":
+def main():
+    logger.info("Carregando configuracao: config.")
+    config, config_pipe = load_config(load_all=['config', 'config_pipe'])
+    logger.info("Configuracao carregada com sucesso.")
+      
     main_submission(
-        pipeline_name="pipeline1"
+        pipeline_name="pipeline1",
+        config=config,
+        config_pipe=config_pipe
         )
+    
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        logger.exception("Falha inesperada no processamento")
+    raise 

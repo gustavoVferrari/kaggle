@@ -228,7 +228,7 @@ def main():
       
     models_list = [
         "RidgeRegressor", 
-        "RandomForestRegressor"
+        # "RandomForestRegressor"
         ]
     
     main_voting_model_lite(

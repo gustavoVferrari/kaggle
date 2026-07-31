@@ -1,27 +1,24 @@
 import os
 import sys
-import yaml
 import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
 sys.path.insert(0, project_root)
 
-from functions.config import resolve_init_path
+from utils.logs import setup_logging
+from Classification.Titanic.src.utils.config import load_config
 
 from functions.feature_selection import FeatureSelectionOrchestrator
 from Classification.Titanic.src.features.feature_eng import PreprocessingOrchestrator
 from utils.plots import Pearson_correlation, Bar_plot
 
-def Main_Feature_Selection():
+def Feature_Selection(config:dict, config_pipe:dict):
     
-        # 1. Carregar configurações
-    with open(os.path.join(project_root, "Classification/Titanic/config/config.yaml"), "r") as f:
-        config = yaml.safe_load(f)
-        config = resolve_init_path(config, project_root)
-        
-    with open(os.path.join(project_root, "Classification/Titanic/config/pipeline.yaml"), "r") as f:
-        config_pipe = yaml.safe_load(f)  
+    log_path = os.path.join(project_root, "Classification/Titanic")
+    logger = setup_logging(log_path)  
+    
+    logger.info("Feature selection preprocessing begin...")
     
     # 1. load dataset    
     X_train = pd.read_parquet(
@@ -38,6 +35,11 @@ def Main_Feature_Selection():
         numerical_dis=config_pipe['features']['num_dis'], 
         categorical_var=config_pipe['features']['cat_var'])
     
+    logger.info("Feature enginnering numerical continual cols: %s", config_pipe['features']['num_con'])
+    logger.info("Feature enginnering numerical discrete cols: %s", config_pipe['features']['num_dis'])
+    logger.info("Feature enginnering categorical cols: %s", config_pipe['features']['cat_var'])    
+    
+    
     pipe = preprocessor.apply("preprocessing")        
     X_train_trans = pipe.fit_transform(X_train)    
     
@@ -48,21 +50,25 @@ def Main_Feature_Selection():
         "QuiSquare", 
         X_train_trans.filter(like='categorical'), 
         y_train)
+    logger.info("Feature selection QuiSquare ran with sucess")
     
     Anova = feature_selection.apply(
         "Anova",
         X_train_trans.filter(like='numerical_pipe_con'),
         y_train)
+    logger.info("Feature selection Anova ran with sucess")
     
     mi = feature_selection.apply(
         "MutualInformationClassif", 
         X_train_trans.filter(like='numerical'), 
         y_train)
+    logger.info("Feature selection MutualInformationClassif ran with sucess")
     
     corr = feature_selection.apply(
         "PearsonCorrelation", 
         X_train_trans.filter(like='numerical'), 
         y_train)
+    logger.info("Feature selection PearsonCorrelation ran with sucess")
         
     path_ =  os.path.join(
         config['init_path'],
@@ -76,5 +82,12 @@ def Main_Feature_Selection():
     
     Bar_plot(mi, title = "Mutual_information", path=path_)
     
+    logger.info("Feature selection completed")
+    
+def main():
+    config, config_pipe = load_config(['config', 'config_pipe'])
+    Feature_Selection(config, config_pipe)
+    
 if __name__ == "__main__":
-    Main_Feature_Selection()
+    main()
+    
